@@ -16,7 +16,7 @@ class SinSquareIntegralScene(Scene):
         text_width = config.frame_width - left_padding - right_padding
 
         # Title
-        title = Text("Solving the Integral 🎯", font_size=44, color=YELLOW)
+        title = Text("Trig Meets Integral 🎯", font_size=44, color=YELLOW)
         title.move_to(ORIGIN)
         self.play(FadeIn(title))
         self.wait(2)
@@ -84,19 +84,22 @@ class SinSquareIntegralScene(Scene):
         # -----------------------------
         self.clear()
 
-        # Re-show the question at the top
-        question = Text("Q: Evaluate the integral:", font_size=36, color=WHITE).to_edge(UP)
+        # Keep empty space at the top
+        top_padding = 1.0
+        self.wait(0.5)  # just to leave top space
+
+        # Show only the integral expression at the top
         integral_expr = MathTex(
             r"I = \int_0^{\infty} \frac{\sin^2 x}{x^2} \, dx",
             font_size=40, color=BLUE
-        ).next_to(question, DOWN, buff=0.3)
-        self.play(Write(question), Write(integral_expr))
-        self.wait(1.5)
+        ).to_edge(UP, buff=top_padding)
+        self.play(Write(integral_expr))
+        self.wait(1)
 
         # Graph padding
         padding = 1.5
         axes_width = config.frame_width - 2 * padding
-        axes_height = config.frame_height - 2 * padding - 1  # minus space for question
+        axes_height = config.frame_height - 2 * padding - 1  # extra space for top padding
 
         axes = Axes(
             x_range=[0, 20, 2],
@@ -112,11 +115,10 @@ class SinSquareIntegralScene(Scene):
 
         # Animated points for luxury effect
         points = VGroup(*[Dot(axes.c2p(x, (np.sin(x)**2)/(x**2) if x!=0 else 1), radius=0.04, color=YELLOW) for x in np.linspace(0,20,50)])
-        graph_label = MathTex(r"\frac{\sin^2 x}{x^2}", font_size=36, color=YELLOW).next_to(axes, UP)
 
         # Animation sequence
         self.play(Create(axes), run_time=1.5)
-        self.play(Create(graph), FadeIn(graph_label), run_time=2)
+        self.play(Create(graph), run_time=2)
         self.play(LaggedStartMap(FadeIn, points, shift=UP, lag_ratio=0.05), run_time=2.5)
         self.wait(1)
         self.play(FadeIn(area, shift=UP), run_time=2)
@@ -125,7 +127,7 @@ class SinSquareIntegralScene(Scene):
 
         # Final answer
         self.clear()
-        celebration = Text("✅ Final Answer: I = π/2 🎉", font_size=40, color=YELLOW)
+        celebration = Text("✅ The Elegant Solution: I = π/2 🎉", font_size=40, color=YELLOW)
         celebration.move_to(ORIGIN)
         self.play(Write(celebration))
         self.wait(5)
