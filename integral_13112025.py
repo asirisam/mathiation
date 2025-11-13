@@ -56,11 +56,19 @@ class SinSquareIntegralScene(Scene):
                     rate_func=smooth
                 )
 
-        # Step-by-step solution (fixed, non-stretch font sizes)
+        # Step-by-step solution (with added steps)
         steps_list = [
             MathTex(r"\sin^2 x = \frac{1 - \cos(2x)}{2}", font_size=42, color=ORANGE),
             MathTex(r"I = \frac{1}{2}\int_0^{\infty} \frac{1 - \cos(2x)}{x^2}\,dx", font_size=42, color=ORANGE),
             MathTex(r"\text{Let } I(a) = \int_0^{\infty} \frac{1 - \cos(ax)}{x^2}\,dx", font_size=40, color=GREEN),
+
+            # New Step 3a: Show derivative under the integral sign
+            MathTex(r"\text{Differentiate w.r.t. } a: I'(a) = \frac{d}{da} \int_0^\infty \frac{1 - \cos(ax)}{x^2} dx", font_size=40, color=GREEN),
+            
+            # New Step 3b: Show derivative applied
+            MathTex(r"I'(a) = \int_0^\infty \frac{\partial}{\partial a} \frac{1 - \cos(ax)}{x^2} dx", font_size=40, color=GREEN),
+
+            # Original Step 4
             MathTex(r"I'(a) = \int_0^{\infty} \frac{\sin(ax)}{x}\,dx", font_size=40, color=GREEN),
             MathTex(r"I'(a) = \frac{\pi}{2}", font_size=38, color=RED),
             MathTex(r"I(a) = \frac{\pi a}{2} + C", font_size=40, color=ORANGE),
