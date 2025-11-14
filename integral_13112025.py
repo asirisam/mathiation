@@ -16,46 +16,50 @@ class SinSquareIntegralScene(Scene):
         text_width = config.frame_width - left_padding - right_padding
 
         # Title
-        title = Text("Trig Meets Integral 🎯", font_size=44, color=YELLOW)
+        title = Text("Trig Meets Integral 🎯", font_size=30, color=YELLOW)
         title.move_to(ORIGIN)
-        self.play(FadeIn(title))
+        self.play(FadeIn(title, shift=UP))
         self.wait(2)
-        self.play(FadeOut(title))
+        self.play(FadeOut(title, shift=DOWN))
 
         # Question
-        question = Text("Q: Evaluate the integral:", font_size=40, color=WHITE)
+        question = Text("Q: Evaluate the integral:", font_size=30, color=WHITE)
         integral_expr = MathTex(
             r"I = \int_0^{\infty} \frac{\sin^2 x}{x^2} \, dx",
             font_size=42, color=BLUE
         )
-
         question.next_to(integral_expr, UP, buff=0.5)
         question_group = VGroup(question, integral_expr).move_to(ORIGIN)
-        self.play(Write(question), Write(integral_expr))
+        self.play(Write(question_group))
         self.wait(3)
-        self.play(FadeOut(question), FadeOut(integral_expr))
+        self.play(FadeOut(question_group, shift=DOWN))
 
         # Step group setup
         steps_group = VGroup()
-        steps_group.shift(DOWN)
+        start_y = config.frame_height / 4  # Start 1/4 vertical height
 
         def add_step(step_mob):
             step_mob.set_width(min(step_mob.width, text_width))
             steps_group.add(step_mob)
+
             if len(steps_group) == 1:
-                step_mob.to_edge(UP)
+                step_mob.move_to(UP * start_y)
             else:
                 step_mob.next_to(steps_group[-2], DOWN, buff=0.7)
-            self.play(Write(step_mob))
-            self.wait(1.2)
-            if len(steps_group) > 5:
-                prev_step = steps_group[-6]
+
+            # Animate step appearance
+            self.play(Write(step_mob), run_time=1)
+            # Scroll when exceeding 5 visible steps
+            if len(steps_group) > 4:
+                prev_step = steps_group[-5]
                 shift_amount = prev_step.height + 0.7
                 self.play(
                     steps_group.animate.shift(UP * shift_amount),
                     run_time=1.0,
                     rate_func=smooth
                 )
+            else:
+                self.wait(0.8)
 
         # Step-by-step solution
         steps_list = [
@@ -85,21 +89,20 @@ class SinSquareIntegralScene(Scene):
         self.clear()
 
         # Keep empty space at the top
-        top_padding = 1.0
-        self.wait(0.5)  # just to leave top space
+        top_padding = 1.3
+        self.wait(0.5)
 
         # Show only the integral expression at the top
         integral_expr = MathTex(
             r"I = \int_0^{\infty} \frac{\sin^2 x}{x^2} \, dx",
             font_size=40, color=BLUE
         ).to_edge(UP, buff=top_padding)
-        self.play(Write(integral_expr))
-        self.wait(1)
+        self.play(Write(integral_expr, run_time=1.5))
 
         # Graph padding
-        padding = 1.5
+        padding = 1.0
         axes_width = config.frame_width - 2 * padding
-        axes_height = config.frame_height - 2 * padding - 1  # extra space for top padding
+        axes_height = (config.frame_height - 2 * padding - 1) * 0.6  # extra space for top padding
 
         axes = Axes(
             x_range=[0, 20, 2],
@@ -127,7 +130,7 @@ class SinSquareIntegralScene(Scene):
 
         # Final answer
         self.clear()
-        celebration = Text("✅ The Elegant Solution: I = π/2 🎉", font_size=40, color=YELLOW)
+        celebration = Text("✅ Final Answer: I = π/2 🎉", font_size=30, color=YELLOW)
         celebration.move_to(ORIGIN)
-        self.play(Write(celebration))
+        self.play(Write(celebration, run_time=2))
         self.wait(5)
