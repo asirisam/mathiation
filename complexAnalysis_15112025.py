@@ -18,7 +18,7 @@ class TrigInfiniteCycle(Scene):
         text_width = config.frame_width - left_padding - right_padding
 
         # Title
-        title = Text("Step Into the World of Trig", font_size=32, color=YELLOW)
+        title = Text("Into the World of Trig", font_size=32, color=YELLOW)
         title.move_to(ORIGIN)
         self.play(FadeIn(title, shift=UP))
         self.wait(1.5)
@@ -45,11 +45,11 @@ class TrigInfiniteCycle(Scene):
             head_radius = 0.15
             body_length = 0.4
             arm_length = 0.25
-            leg_length = 0.25
+            leg_length = 0.4
 
             head = Circle(radius=head_radius, color=YELLOW).move_to(center_point + UP * (body_length/2))
 
-            body_top = center_point + UP * (head_radius - 0.05)
+            body_top = center_point + UP * (head_radius - 0.075)
             body_bottom = center_point + DOWN * (body_length - head_radius)
             body = Line(body_top, body_bottom, color=YELLOW)
 
@@ -67,8 +67,8 @@ class TrigInfiniteCycle(Scene):
             )
 
             # Legs angled outward
-            leg_left = Line(body_bottom, body_bottom + LEFT * leg_length + DOWN * 0.05, color=YELLOW)
-            leg_right = Line(body_bottom, body_bottom + RIGHT * leg_length + DOWN * 0.05, color=YELLOW)
+            leg_left = Line(body_bottom, body_bottom + LEFT * leg_length + DOWN * 0.4, color=YELLOW)
+            leg_right = Line(body_bottom, body_bottom + RIGHT * leg_length + DOWN * 0.4, color=YELLOW)
 
             stickman = VGroup(head, body, arm_left, arm_right, leg_left, leg_right)
             return stickman
