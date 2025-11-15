@@ -18,14 +18,14 @@ class TrigInfiniteCycle(Scene):
         text_width = config.frame_width - left_padding - right_padding
 
         # Title
-        title = Text("Trig Equation Solved!", font_size=32, color=YELLOW)
+        title = Text("Step Into the World of Trig", font_size=32, color=YELLOW)
         title.move_to(ORIGIN)
         self.play(FadeIn(title, shift=UP))
         self.wait(1.5)
         self.play(FadeOut(title, shift=DOWN))
 
         # Question
-        question = Text("Q: Solve:", font_size=30, color=WHITE)
+        question = Text("Q: Ready to solve?", font_size=30, color=WHITE)
         function_expr = MathTex(
             r"2\cos^2 x - 3\sin x = 0",
             font_size=42, color=BLUE
@@ -70,8 +70,8 @@ class TrigInfiniteCycle(Scene):
             MathTex(r"\text{Quadratic formula: } \sin x = \frac{-3 \pm \sqrt{9 + 16}}{4}", font_size=36, color=ORANGE),
             MathTex(r"\sin x = \frac{-3 + 5}{4} = \frac{1}{2}, \quad \sin x = \frac{-3 - 5}{4} = -2", font_size=36, color=GREEN),
             MathTex(r"\text{Only } \sin x = \frac{1}{2} \text{ is valid}", font_size=36, color=YELLOW),
-            MathTex(r"x = \frac{\pi}{6} + 2n\pi \text{ or } x = \frac{5\pi}{6} + 2n\pi, \quad n \in \mathbb{Z}", font_size=36, color=YELLOW),
-            MathTex(r"\text{\checkmark General solution accounts for infinite cycles!}", font_size=32, color=YELLOW)
+            MathTex(r"\text{\checkmark General solution accounts for infinite cycles!}", font_size=32, color=YELLOW),
+            MathTex(r"x = \frac{\pi}{6} + 2n\pi \text{ or } x = \frac{5\pi}{6} + 2n\pi, \quad n \in \mathbb{Z}", font_size=36, color=YELLOW)
         ]
 
         for step in steps_list:
@@ -136,7 +136,7 @@ class TrigInfiniteCycle(Scene):
 
         # Closing
         self.clear()
-        final_text = Text("General solution visualised!", font_size=32, color=YELLOW)
+        final_text = Text("Nailed it!", font_size=32, color=YELLOW)
         final_text.move_to(ORIGIN)
         self.play(Write(final_text, run_time=2))
         self.wait(2)
