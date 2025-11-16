@@ -14,7 +14,8 @@ class PairedTrigGraphs(Scene):
         x_max = 4 * np.pi
         x_vals = np.linspace(x_min, x_max, 220)
         speed = 2.0
-        side_padding = 0.5  # updated padding
+        side_padding = 0.5
+        bottom_padding = 1.0  # updated bottom padding
 
         # Define pairs: (function1, label1, y_range1, function2, label2, y_range2)
         trig_pairs = [
@@ -28,18 +29,19 @@ class PairedTrigGraphs(Scene):
 
         for fn1, label1, y1, fn2, label2, y2 in trig_pairs:
             self.show_trig_pair(fn1, label1, y1, fn2, label2, y2,
-                                x_vals, x_min, x_max, speed, side_padding)
+                                x_vals, x_min, x_max, speed, side_padding, bottom_padding)
             self.wait(2)
             self.clear()
 
     def show_trig_pair(self, fn1, label1, y_range1, fn2, label2, y_range2,
-                        x_vals, x_min, x_max, speed, side_padding):
+                        x_vals, x_min, x_max, speed, side_padding, bottom_padding):
         top_padding = 1.0
-        footer_height = 0.8
-        graph_slot_height = (config.frame_height - top_padding - footer_height) / 2
+        footer_height = bottom_padding
+        # Reduce each graph height to avoid overlap
+        graph_slot_height = (config.frame_height - top_padding - footer_height) / 2.2
 
         # Title
-        title = Text(f"{label1} & {label2}", font_size=32, color=YELLOW)
+        title = Text(f"{label1} vs {label2}", font_size=32, color=YELLOW)
         title.to_edge(UP, buff=top_padding)
         self.play(Write(title), run_time=1)
 
@@ -71,14 +73,12 @@ class PairedTrigGraphs(Scene):
         # Add axis labels (X odd multiples of π/2, Y step 0.5)
         def add_axis_labels(axes, y_range):
             labels = VGroup()
-            # Odd multiples of π/2
             pi_labels = [np.pi/2, 3*np.pi/2, 5*np.pi/2, 7*np.pi/2, -np.pi/2, -3*np.pi/2, -5*np.pi/2, -7*np.pi/2]
             for x in pi_labels:
-                text = MathTex(rf"{int(2*x/np.pi)}\pi/2" if x != np.pi/2 else r"\pi/2", font_size=18, color=BLUE)
+                text = MathTex(rf"{int(2*x/np.pi)}\pi/2" if x != np.pi/2 else r"\pi/2", font_size=12, color=BLUE)
                 text.next_to(axes.c2p(x, 0), DOWN*0.25)
                 labels.add(text)
 
-            # Y-axis labels with step 0.5
             y_ticks = np.arange(y_range[0], y_range[1]+0.01, 0.5)
             for y in y_ticks:
                 if abs(y) < 1e-6:
