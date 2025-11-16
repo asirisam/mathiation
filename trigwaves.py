@@ -21,7 +21,7 @@ class PairedTrigGraphs(Scene):
         x_max = 4 * np.pi
         x_vals = np.linspace(x_min, x_max, 220)
         speed = 2.0
-        side_padding = 0.5
+        side_padding = 1.0
         bottom_padding = 1.0
 
         # Define pairs: (function1, label1, y_range1, function2, label2, y_range2)
@@ -50,7 +50,7 @@ class PairedTrigGraphs(Scene):
     # --------------------- Existing methods below ---------------------
     def show_trig_pair(self, fn1, label1, y_range1, fn2, label2, y_range2,
                         x_vals, x_min, x_max, speed, side_padding, bottom_padding):
-        top_padding = 1.0
+        top_padding = 1.5
         footer_height = bottom_padding
         graph_slot_height = (config.frame_height - top_padding - footer_height) / 2.2
 
