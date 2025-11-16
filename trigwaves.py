@@ -10,12 +10,19 @@ config.background_color = BLACK
 
 class PairedTrigGraphs(Scene):
     def construct(self):
+        # -------- Title clip --------
+        title_text = Text("Trig Visualisation", font_size=30, color=YELLOW)
+        self.play(Write(title_text), run_time=2)
+        self.wait(2)
+        self.play(FadeOut(title_text))
+
+        # -------- Graphs --------
         x_min = -4 * np.pi
         x_max = 4 * np.pi
         x_vals = np.linspace(x_min, x_max, 220)
         speed = 2.0
         side_padding = 0.5
-        bottom_padding = 1.0  # updated bottom padding
+        bottom_padding = 1.0
 
         # Define pairs: (function1, label1, y_range1, function2, label2, y_range2)
         trig_pairs = [
@@ -33,19 +40,24 @@ class PairedTrigGraphs(Scene):
             self.wait(2)
             self.clear()
 
+        # -------- Finishing clip --------
+        end_text = Text("✅ Nailed it!", font_size=30, color=YELLOW)
+        end_text.to_edge(DOWN, buff=0.5)
+        self.play(FadeIn(end_text), run_time=1.5)
+        self.wait(2)
+        self.play(FadeOut(end_text))
+
+    # --------------------- Existing methods below ---------------------
     def show_trig_pair(self, fn1, label1, y_range1, fn2, label2, y_range2,
                         x_vals, x_min, x_max, speed, side_padding, bottom_padding):
         top_padding = 1.0
         footer_height = bottom_padding
-        # Reduce each graph height to avoid overlap
         graph_slot_height = (config.frame_height - top_padding - footer_height) / 2.2
 
-        # Title
         title = Text(f"{label1} vs {label2}", font_size=32, color=YELLOW)
         title.to_edge(UP, buff=top_padding)
         self.play(Write(title), run_time=1)
 
-        # Axes helper
         def make_axes(y_center, y_range):
             axes_width = config.frame_width - 2*side_padding
             axes_height = graph_slot_height*0.9
@@ -60,7 +72,6 @@ class PairedTrigGraphs(Scene):
             axes.move_to([0, y_center, 0])
             return axes
 
-        # Vertical centers
         top_y = title.get_bottom()[1] - 0.15
         center1 = top_y - graph_slot_height/2
         center2 = center1 - graph_slot_height
@@ -70,7 +81,6 @@ class PairedTrigGraphs(Scene):
 
         self.play(Create(axes1), Create(axes2), run_time=1.5)
 
-        # Add axis labels (X odd multiples of π/2, Y step 0.5)
         def add_axis_labels(axes, y_range):
             labels = VGroup()
             pi_labels = [np.pi/2, 3*np.pi/2, 5*np.pi/2, 7*np.pi/2, -np.pi/2, -3*np.pi/2, -5*np.pi/2, -7*np.pi/2]
@@ -96,12 +106,10 @@ class PairedTrigGraphs(Scene):
         add_axis_labels(axes1, y_range1)
         add_axis_labels(axes2, y_range2)
 
-        # Plot functions
         graph1 = self.safe_plot(axes1, fn1, x_min, x_max, y_range1[1])
         graph2 = self.safe_plot(axes2, fn2, x_min, x_max, y_range2[1])
         self.play(Create(graph1), Create(graph2), run_time=2)
 
-        # Moving dots
         dots1 = self.create_dots(axes1, fn1, x_vals, y_range1[1])
         dots2 = self.create_dots(axes2, fn2, x_vals, y_range2[1])
 
