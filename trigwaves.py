@@ -34,18 +34,19 @@ class PairedTrigGraphs(Scene):
              lambda x: 1/np.tan(x), "cot(x)", [-2, 2])
         ]
 
-        for fn1, label1, y1, fn2, label2, y2 in trig_pairs:
+        for i, (fn1, label1, y1, fn2, label2, y2) in enumerate(trig_pairs):
             self.show_trig_pair(fn1, label1, y1, fn2, label2, y2,
                                 x_vals, x_min, x_max, speed, side_padding, bottom_padding)
-            self.wait(2)
+            # For last slide (tan & cotan), wait only 1 sec before closing
+            self.wait(1 if i == 2 else 2)
             self.clear()
 
-        # -------- Finishing clip --------
-        end_text = Text("✅ Nailed it!", font_size=30, color=YELLOW)
-        end_text.to_edge(DOWN, buff=0.5)
-        self.play(FadeIn(end_text), run_time=1.5)
+        # -------- Closing clip centered --------
+        self.clear()
+        final_text = Text("✅ Nailed it! 🎉", font_size=30, color=YELLOW)
+        final_text.move_to(ORIGIN)
+        self.play(Write(final_text, run_time=2))
         self.wait(2)
-        self.play(FadeOut(end_text))
 
     # --------------------- Existing methods below ---------------------
     def show_trig_pair(self, fn1, label1, y_range1, fn2, label2, y_range2,
