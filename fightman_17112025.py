@@ -166,12 +166,14 @@ POSE_KEYFRAMES = [
 class RealisticAIPoseFight(Scene):
 
     def camera_shake(self, mag=0.04, shakes=4, duration=0.25):
-        frame = self.camera.frame
         for _ in range(shakes):
             dx = np.random.uniform(-mag, mag)
             dy = np.random.uniform(-mag * 0.6, mag * 0.6)
-            self.play(frame.animate.shift(RIGHT * dx + UP * dy), run_time=duration / shakes, rate_func=linear)
-        self.play(frame.animate.move_to(ORIGIN), run_time=duration / shakes)
+            ang = np.random.uniform(-mag * 8, mag * 8) * DEGREES
+            self.play(self.camera.animate.shift(RIGHT * dx + UP * dy).rotate(ang),
+                      run_time=duration / shakes, rate_func=linear)
+        # Reset camera to center
+        self.play(self.camera.animate.move_to(ORIGIN).set_angle(0), run_time=0.16)
 
     def construct(self):
         tempo = 1.0
@@ -213,8 +215,10 @@ class RealisticAIPoseFight(Scene):
                 c = rig.copy()
                 alpha = (1 - i / float(n)) ** fade_power
                 for sub in c:
-                    sub.set_fill(opacity=alpha) if hasattr(sub, "set_fill") else None
-                    sub.set_stroke(opacity=alpha) if hasattr(sub, "set_stroke") else None
+                    if hasattr(sub, "set_fill"):
+                        sub.set_fill(opacity=alpha)
+                    if hasattr(sub, "set_stroke"):
+                        sub.set_stroke(opacity=alpha)
                 clones.add(c)
             return clones
 
@@ -224,8 +228,8 @@ class RealisticAIPoseFight(Scene):
             self.play(flash.animate.scale(2.6).set_fill(opacity=0), run_time=0.16, rate_func=there_and_back_with_pause)
             flash.remove()
             rim = Circle(radius=0.6*intensity, stroke_color=WHITE, stroke_width=2, fill_opacity=0).move_to(point)
-            self.play(Create(rim), run_time=0.08)
-            self.play(FadeOut(rim), run_time=0.12)
+            self.play(Create(rim), run_time=0.16)
+            self.play(FadeOut(rim), run_time=0.16)
             rim.remove()
 
         def transition_rig_to(rig, start_t, end_t, duration, rate_func=smooth, motion_blur=True):
@@ -243,7 +247,7 @@ class RealisticAIPoseFight(Scene):
                     c.move_to(rig.get_center() + (j/len(trail))*(RIGHT*0.05))
                     self.add(c)
                 self.play(vt.animate.set_value(1.0), run_time=duration, rate_func=rate_func)
-                self.play(*[FadeOut(t, run_time=0.12) for t in trail], run_time=0.12)
+                self.play(*[FadeOut(t, run_time=0.16) for t in trail], run_time=0.16)
             else:
                 self.play(vt.animate.set_value(1.0), run_time=duration, rate_func=rate_func)
             dummy.remove_updater(updater)
@@ -257,16 +261,13 @@ class RealisticAIPoseFight(Scene):
             t.move_to(left_rig.get_center() + (i / len(trail)) * (RIGHT * 0.25))
             self.add(t)
         self.play(left_rig.animate.shift(RIGHT*0.25), run_time=0.16, rate_func=ease_out_expo)
-        self.play(*[FadeOut(t, run_time=0.12) for t in trail], run_time=0.12)
+        self.play(*[FadeOut(t, run_time=0.16) for t in trail], run_time=0.16)
 
         transition_rig_to(left_rig, start_t=0.8, end_t=1.5, duration=0.35*tempo)
         self.play(right_rig.animate.shift(RIGHT*0.06 + UP*0.03), run_time=0.12)
         self.play(Rotate(right_rig.parts["head"], angle=8*DEGREES, about_point=right_rig.parts["head"].get_center()), run_time=0.12)
         impact_flash(right_rig.parts["head"].get_center() + LEFT*0.05, intensity=0.8)
         self.camera_shake(mag=0.03, shakes=4, duration=0.18)
-
-        # Continue all other choreography similarly...
-        # (You can add remaining keyframe transitions, hook, uppercut, knockback using same functions)
 
         victory = Text("VICTORY", font_size=72, weight=BOLD, color="#111111").to_edge(UP, buff=0.8)
         self.play(FadeIn(victory, shift=UP), run_time=0.5)
