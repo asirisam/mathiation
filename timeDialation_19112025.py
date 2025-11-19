@@ -13,7 +13,7 @@ class LightClockTimeDilation(Scene):
         # -----------------------------
         # Title slide
         # -----------------------------
-        title = Text("Time Dilation ⏱️ Explained with Light Clock", font_size=36, color=YELLOW)
+        title = Text("Time Dilation", font_size=36, color=YELLOW)
         title.move_to(ORIGIN)
         self.play(FadeIn(title, shift=UP))
         self.wait(2)
@@ -44,7 +44,7 @@ class LightClockTimeDilation(Scene):
         # Light clocks animation
         # -----------------------------
         clock_height = 2.0
-        clock_width = 0.5
+        clock_width = 1.0
         vertical_spacing = 0.2
 
         # Stationary clock (left)
@@ -63,11 +63,11 @@ class LightClockTimeDilation(Scene):
         # Labels for L and horizontal speed
         L_line = Line(floor_s.get_center(), ceiling_s.get_center(), color=WHITE)
         L_label = MathTex("L", color=WHITE).next_to(L_line.get_right(), RIGHT*0.1)
-        v_arrow = Arrow(start=floor_m.get_left() + DOWN*0.3, end=floor_m.get_left() + RIGHT*2 + DOWN*0.3, color=RED)
-        v_label = MathTex("v", color=RED).next_to(v_arrow.get_center(), DOWN*0.1)
+        #v_arrow = Arrow(start=floor_m.get_left() + DOWN*0.3, end=floor_m.get_left() + RIGHT*2 + DOWN*0.3, color=RED)
+        #v_label = MathTex("v", color=RED).next_to(v_arrow.get_center(), DOWN*0.1)
 
         self.add(floor_s, ceiling_s, photon_s, label_s)
-        self.add(clock_m, photon_m, label_m, L_line, L_label, v_arrow, v_label)
+        self.add(clock_m, photon_m, label_m, L_line, L_label)
 
         # -----------------------------
         # Animate photon bouncing naturally
@@ -116,7 +116,7 @@ class LightClockTimeDilation(Scene):
         self.wait(1)
         self.play(FadeOut(clock_m), FadeOut(photon_m), FadeOut(label_m))
         self.play(FadeOut(floor_s), FadeOut(ceiling_s), FadeOut(photon_s), FadeOut(label_s))
-        self.play(FadeOut(L_line), FadeOut(L_label), FadeOut(v_arrow), FadeOut(v_label))
+        self.play(FadeOut(L_line), FadeOut(L_label))
         self.play(FadeOut(explanations))
 
         # -----------------------------
@@ -197,7 +197,7 @@ class LightClockTimeDilation(Scene):
 
         # Closing
         self.clear()
-        final_text = Text("✅ Time Dilation Visualized!", font_size=32, color=YELLOW)
+        final_text = Text("Nailed it!", font_size=32, color=YELLOW)
         final_text.move_to(ORIGIN)
         self.play(Write(final_text, run_time=2))
         self.wait(2)
