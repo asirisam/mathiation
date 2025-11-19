@@ -57,7 +57,7 @@ class LightClockTimeDilation(Scene):
         floor_m = Line(RIGHT*1 + DOWN*1, RIGHT*1 + RIGHT*clock_width + DOWN*1, color=RED)
         ceiling_m = Line(RIGHT*1 + UP*1, RIGHT*1 + RIGHT*clock_width + UP*1, color=RED)
         clock_m = VGroup(floor_m, ceiling_m)
-        photon_m = Dot(color=YELLOW).move_to(floor_m.get_center() + UP*0.05)
+        photon_m = Dot(color=YELLOW).move_to(floor_m.get_center() - RIGHT*1 + UP*0.05)
         label_m = Text("Moving\nΔt", font_size=24, color=RED).next_to(floor_m, DOWN, buff=vertical_spacing)
 
         # Labels for L and horizontal speed
