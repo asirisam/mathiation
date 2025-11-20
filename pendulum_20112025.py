@@ -18,17 +18,16 @@ class PendulumTheoremProof(Scene):
         text_width = config.frame_width - left_padding - right_padding
 
         # Title
-        title = Text("Simple Pendulum Theorem", font_size=32, color=YELLOW)
+        title = Text("Motion Secrets", font_size=32, color=YELLOW)
         title.move_to(ORIGIN)  # vertically centered
         self.play(FadeIn(title, shift=UP))
         self.wait(1.5)
         self.play(FadeOut(title, shift=DOWN))
 
         # Question
-        question = Text("Q: Prove the small-angle pendulum theorem", font_size=30, color=WHITE)
+        question = Text("Q: Period of a simple Pendulum?", font_size=30, color=WHITE)
         function_expr = Text(
-            "Show that for small oscillations, the period of a simple pendulum\n"
-            "is independent of amplitude and given by:\n"
+            "Linearised Pendulum Equation\n"
             "T = 2π√(L/g)",
             font_size=26, color=BLUE, line_spacing=1.2
         )
@@ -43,9 +42,22 @@ class PendulumTheoremProof(Scene):
         # -----------------------------
         # Pendulum diagram with legends and oscillation
         # -----------------------------
-        L = 2.0  # pendulum length
+        L = 3.0  # pendulum length
         theta0 = 30 * DEGREES  # max angle
         pivot = np.array([0, 1.5, 0])
+
+        # Explanations of symbols
+        top_padding = 1.5
+        explanations = VGroup(
+            Text("Mass m at the end of a Massless Rod", font_size=28, color=BLUE),
+            Text("Lenght of a Massless Rod: L", font_size=28, color=GREEN),
+            Text("Displaced by an angle θ(t) from the vertical", font_size=28, color=ORANGE),
+            Text("Gravity g acts downward", font_size=28, color=RED)
+        ).arrange(DOWN, aligned_edge=LEFT, buff=0.2)
+        explanations.set_width(text_width)
+        explanations.to_edge(UP, buff=top_padding)
+        self.play(Write(explanations))
+        self.wait(1.5)
 
         # Create vertical line as reference
         vertical_line = Line(pivot, pivot + DOWN*L, color=GRAY, stroke_width=2)
@@ -105,9 +117,9 @@ class PendulumTheoremProof(Scene):
             mob[9].next_to(mob[8].get_end(), RIGHT*0.1)
 
         pendulum_group.add_updater(pendulum_updater)
-        self.wait(6)
+        self.wait(7)
         pendulum_group.remove_updater(pendulum_updater)
-        self.wait(1)
+        self.wait(0.5)
 
         # -----------------------------
         # Step-by-step solution (after pendulum)
@@ -160,8 +172,8 @@ class PendulumTheoremProof(Scene):
                 UpdateFromAlphaFunc(pointer, lambda mob, a: update_man(mob, step_mob, a))
             )
             self.remove(stickman, pointer)
-            if len(steps_group) > 4:
-                prev_step = steps_group[-5]
+            if len(steps_group) > 3:
+                prev_step = steps_group[-4]
                 shift_amt = prev_step.height + 0.7
                 self.play(steps_group.animate.shift(UP * shift_amt), run_time=0.5)
             else:
@@ -181,17 +193,19 @@ class PendulumTheoremProof(Scene):
             MathTex(r"\text{Compare with SHM: } \frac{d^2 x}{dt^2} + \omega^2 x = 0", font_size=36, color=GREEN),
             MathTex(r"\omega = \sqrt{\frac{g}{L}}", font_size=36, color=YELLOW),
             MathTex(r"T = \frac{2 \pi}{\omega} = 2 \pi \sqrt{\frac{L}{g}}", font_size=40, color=ORANGE),
-            MathTex(r"\text{Hence, for small oscillations, } T \text{ is independent of amplitude } \theta_0", font_size=36, color=GREEN),
+            MathTex(r"\text{Hence, for small oscillations, }", font_size=36, color=GREEN),
+            MathTex(r"\text{T is independent of amplitude } \theta_0", font_size=36, color=GREEN)
         ]
 
         for step in steps_list:
             add_step(step)
 
+        self.wait(2)
         # -----------------------------
         # Closing text (vertically centered)
         # -----------------------------
         self.clear()
-        final_text = Text("Theorem Proven!", font_size=32, color=YELLOW)
+        final_text = Text("Nailed it!", font_size=32, color=YELLOW)
         final_text.move_to(ORIGIN)
         self.play(Write(final_text, run_time=2))
         self.wait(1)
