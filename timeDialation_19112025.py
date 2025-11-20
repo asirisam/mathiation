@@ -13,16 +13,34 @@ class LightClockTimeDilation(Scene):
         # -----------------------------
         # Title slide
         # -----------------------------
-        title = Text("Time Dilation", font_size=36, color=YELLOW)
+        title = Text("Time Dialation", font_size=36, color=YELLOW)
         title.move_to(ORIGIN)
         self.play(FadeIn(title, shift=UP))
         self.wait(2)
         self.play(FadeOut(title, shift=DOWN))
 
         # -----------------------------
+        # Question slide after title
+        # -----------------------------
+        question = Text("Q: What is it?", font_size=36, color=ORANGE)
+        equation = MathTex(r"\Delta t = \frac{\Delta t_0}{\sqrt{1 - v^2/c^2}}", font_size=36, color=BLUE)
+        question_group = VGroup(question, equation).arrange(DOWN, buff=0.5)
+        question_group.move_to(ORIGIN)
+        self.play(FadeIn(question_group, shift=UP))
+        self.wait(2)
+        self.play(FadeOut(question_group, shift=DOWN))
+        question2 = Text("Let's consider", font_size=36, color=GREEN)
+        equation2 = Text("a Light Clock", font_size=36, color=RED)
+        question_group2 = VGroup(question2, equation2).arrange(DOWN, buff=0.5)
+        question_group2.move_to(ORIGIN)
+        self.play(FadeIn(question_group2, shift=UP))
+        self.wait(2)
+        self.play(FadeOut(question_group2, shift=DOWN))
+
+        # -----------------------------
         # Light clock explanation with symbols at top
         # -----------------------------
-        top_padding = 1.0
+        top_padding = 1.5
         left_pad = 1.0
         right_pad = 1.0
         text_width = config.frame_width - left_pad - right_pad
@@ -57,14 +75,13 @@ class LightClockTimeDilation(Scene):
         floor_m = Line(RIGHT*1 + DOWN*1, RIGHT*1 + RIGHT*clock_width + DOWN*1, color=RED)
         ceiling_m = Line(RIGHT*1 + UP*1, RIGHT*1 + RIGHT*clock_width + UP*1, color=RED)
         clock_m = VGroup(floor_m, ceiling_m)
+        # Start photon 1.0 left from current
         photon_m = Dot(color=YELLOW).move_to(floor_m.get_center() - RIGHT*1 + UP*0.05)
         label_m = Text("Moving\nΔt", font_size=24, color=RED).next_to(floor_m, DOWN, buff=vertical_spacing)
 
-        # Labels for L and horizontal speed
+        # Labels for L
         L_line = Line(floor_s.get_center(), ceiling_s.get_center(), color=WHITE)
         L_label = MathTex("L", color=WHITE).next_to(L_line.get_right(), RIGHT*0.1)
-        #v_arrow = Arrow(start=floor_m.get_left() + DOWN*0.3, end=floor_m.get_left() + RIGHT*2 + DOWN*0.3, color=RED)
-        #v_label = MathTex("v", color=RED).next_to(v_arrow.get_center(), DOWN*0.1)
 
         self.add(floor_s, ceiling_s, photon_s, label_s)
         self.add(clock_m, photon_m, label_m, L_line, L_label)
@@ -113,7 +130,7 @@ class LightClockTimeDilation(Scene):
 
             self.wait(0.02)
 
-        self.wait(1)
+        #self.wait(1)
         self.play(FadeOut(clock_m), FadeOut(photon_m), FadeOut(label_m))
         self.play(FadeOut(floor_s), FadeOut(ceiling_s), FadeOut(photon_s), FadeOut(label_s))
         self.play(FadeOut(L_line), FadeOut(L_label))
@@ -181,10 +198,21 @@ class LightClockTimeDilation(Scene):
             else:
                 self.wait(0.5)
 
-        # Steps in simple words
+        # Steps in simple words with Pythagorean triangle
         steps_list = [
             MathTex(r"\text{Proper time: } \Delta t_0 = 2L/c", font_size=38, color=GREEN),
             MathTex(r"\text{Moving clock: light travels diagonal}", font_size=36, color=ORANGE),
+
+            # Pythagorean triangle
+            VGroup(
+                Line(LEFT*1 + DOWN*0.5, LEFT*1 + UP*0.5, color=YELLOW),          # vertical = L
+                Line(LEFT*1 + DOWN*0.5, RIGHT*1 + DOWN*0.5, color=RED),          # horizontal = v Δt / 2
+                Line(LEFT*1 + UP*0.5, RIGHT*1 + DOWN*0.5, color=BLUE),           # hypotenuse = c Δt / 2
+                MathTex("L", font_size=28, color=YELLOW).next_to(LEFT*1 + UP*0.0, LEFT),
+                MathTex(r"v \Delta t/2", font_size=28, color=RED).next_to(RIGHT*0.0 + DOWN*0.5, DOWN),
+                MathTex(r"c \Delta t/2", font_size=28, color=BLUE).next_to(RIGHT*0.7 + UP*0.0, UP)
+            ),
+
             MathTex(r"(c \Delta t / 2)^2 = L^2 + (v \Delta t / 2)^2", font_size=40, color=YELLOW),
             MathTex(r"c^2 \Delta t^2 = v^2 \Delta t^2 + 4L^2", font_size=38, color=GREEN),
             MathTex(r"\Delta t^2 (c^2 - v^2) = 4L^2", font_size=38, color=ORANGE),
@@ -195,6 +223,7 @@ class LightClockTimeDilation(Scene):
         for step in steps_list:
             add_step(step)
 
+        self.wait(1.5)
         # Closing
         self.clear()
         final_text = Text("Nailed it!", font_size=32, color=YELLOW)
