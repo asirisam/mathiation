@@ -8,146 +8,107 @@ config.frame_width = 6
 config.frame_height = 6 * (1920 / 1080)
 config.background_color = BLACK
 
-class PlayfulTesseractScene(Scene):
+class SchwarzschildScene(Scene):
     def construct(self):
-        size = 2.5  # larger scale
-        verts4d = [np.array([(-1 if ((i >> k) & 1) == 0 else 1) * size for k in range(4)]) for i in range(16)]
-
-        def hamming_distance(a, b):
-            return sum(x != y for x, y in zip(a, b))
-
-        edges = [(i, j) for i, vi in enumerate(verts4d)
-                 for j, vj in enumerate(verts4d) if i < j and hamming_distance(vi > 0, vj > 0) == 1]
-
-        # Tesseract edges
-        edge_lines = VGroup(*[Line(ORIGIN, ORIGIN, color=WHITE, stroke_width=2) for _ in edges])
-        self.add(edge_lines)
-
-        # 4D rotation helper
-        def rotate_4d(v, a, b, phi):
-            v = v.copy()
-            ca = np.cos(phi)
-            sa = np.sin(phi)
-            x_a = v[a]
-            x_b = v[b]
-            v[a] = ca * x_a - sa * x_b
-            v[b] = sa * x_a + ca * x_b
-            return v
-
-        # 4D -> 3D -> 2D projection
-        def project_4d_to_3d(v4):
-            w_offset = 6.0
-            factor = 1 / (w_offset - v4[3])
-            return v4[:3] * factor * 3
-
-        def project_3d_to_2d(v3):
-            z_offset = 5.0
-            factor = 1 / (z_offset - v3[2])
-            return np.array([v3[0] * factor, v3[1] * factor, 0])
-
-        def project_4d_to_2d(v4):
-            return project_3d_to_2d(project_4d_to_3d(v4))
-
         # -----------------------------
-        # Tesseract rotation updater
+        # Step-by-step explanation
         # -----------------------------
-        def tesseract_updater(mob, dt):
-            t = self.renderer.time
-            # playful random wobble in rotation
-            angle_xy = 0.5 * t + 0.1 * np.sin(1.2*t)
-            angle_zw = 0.3 * t + 0.1 * np.cos(0.7*t)
-            angle_xz = 0.4 * t + 0.1 * np.sin(0.5*t)
-            rotated = []
-            for v in verts4d:
-                r = rotate_4d(v, 0, 1, angle_xy)
-                r = rotate_4d(r, 2, 3, angle_zw)
-                r = rotate_4d(r, 0, 2, angle_xz)
-                rotated.append(r)
-            pts2d = [project_4d_to_2d(v) for v in rotated]
-            for idx, (i, j) in enumerate(edges):
-                mob[idx].put_start_and_end_on(pts2d[i], pts2d[j])
+        left_padding = 1.5
+        right_padding = 0.3
+        text_width = config.frame_width - left_padding - right_padding
 
-        edge_lines.add_updater(tesseract_updater)
+        # Title
+        title = Text("Schwarzschild Radius 🌑", font_size=36, color=YELLOW)
+        title.move_to(ORIGIN)
+        self.play(FadeIn(title, shift=UP))
+        self.wait(1.5)
+        self.play(FadeOut(title, shift=DOWN))
 
-        # Label
-        label = Text("Playful Tesseract in 4D → 3D", font_size=28, color=BLUE)
-        label.to_edge(DOWN, buff=0.5)
-        self.play(Write(label))
+        # Question
+        question = Text("Q: How small must a planet be", font_size=30, color=WHITE)
+        question2 = Text("to become a black hole?", font_size=30, color=WHITE)
+        question_group = VGroup(question, question2).arrange(DOWN, buff=0.3).move_to(ORIGIN)
+        self.play(Write(question_group))
+        self.wait(1.5)
+        self.play(FadeOut(question_group, shift=DOWN))
 
-        # -----------------------------
-        # Fun vertex animation
-        # -----------------------------
-        vertices = VGroup(*[Dot(project_4d_to_2d(v), color=YELLOW, radius=0.15) for v in verts4d])
-        self.play(LaggedStartMap(FadeIn, vertices, shift=UP, lag_ratio=0.15))
-        self.play(LaggedStartMap(
-            ApplyMethod, vertices,
-            lambda m: (m.scale, 1.5),
-            run_time=1, lag_ratio=0.1,
-            rate_func=there_and_back
-        ))
-        self.play(FadeOut(vertices))
+        # Step group setup
+        steps_group = VGroup()
+        start_y = config.frame_height / 4
 
-        # -----------------------------
-        # Fun edges animation
-        # -----------------------------
-        edge_highlight = VGroup(*[Line(edge_lines[i].get_start(), edge_lines[i].get_end(),
-                                       color=GREEN, stroke_width=3) for i in range(len(edges))])
-        self.play(LaggedStartMap(Write, edge_highlight, lag_ratio=0.05))
-        self.play(LaggedStartMap(FadeOut, edge_highlight, lag_ratio=0.05))
+        def add_step(step_mob):
+            step_mob.set_width(min(step_mob.width, text_width))
+            steps_group.add(step_mob)
 
-        # -----------------------------
-        # Fun faces animation
-        # -----------------------------
-        face_lines = VGroup(*[Line(edge_lines[i].get_start(), edge_lines[i].get_end(),
-                                   color=ORANGE, stroke_width=2) for i in range(len(edges))])
-        self.play(FadeIn(face_lines))
-        self.play(LaggedStartMap(
-            ApplyMethod, face_lines,
-            lambda m: (m.scale, 1.1),
-            run_time=1, lag_ratio=0.05,
-            rate_func=there_and_back
-        ))
-        self.play(FadeOut(face_lines))
+            if len(steps_group) == 1:
+                step_mob.move_to(UP * start_y)
+            else:
+                step_mob.next_to(steps_group[-2], DOWN, buff=0.7)
 
-        # -----------------------------
-        # Fun cubes animation
-        # -----------------------------
-        cube_lines = VGroup(*[Line(edge_lines[i].get_start(), edge_lines[i].get_end(),
-                                   color=PURPLE, stroke_width=2) for i in range(len(edges))])
-        self.play(FadeIn(cube_lines))
-        self.play(LaggedStartMap(
-            ApplyMethod, cube_lines,
-            lambda m: (m.shift, UP*0.1 + RIGHT*0.1),
-            run_time=1, lag_ratio=0.05,
-            rate_func=there_and_back
-        ))
-        self.play(FadeOut(cube_lines))
+            self.play(Write(step_mob), run_time=1)
+            if len(steps_group) > 4:
+                prev_step = steps_group[-5]
+                shift_amount = prev_step.height + 0.7
+                self.play(
+                    steps_group.animate.shift(UP * shift_amount),
+                    run_time=0.5,
+                    rate_func=smooth
+                )
+            else:
+                self.wait(0.5)
 
-        # -----------------------------
-        # Question & Answer
-        # -----------------------------
-        question = Text("Q: How many vertices, edges, faces, cubes?", font_size=32, color=YELLOW)
-        question.to_edge(UP, buff=0.5)
-        self.play(Write(question))
-        self.wait(1)
-        answer = Text("Vertices: 16\nEdges: 32\nFaces: 24\nCubes: 8", font_size=32, color=WHITE)
-        answer.to_edge(DOWN, buff=0.5)
-        self.play(Write(answer))
+        # Steps of symbolic derivation
+        steps_list = [
+            MathTex(r"\text{Consider a spherical mass } M.", font_size=40, color=ORANGE),
+
+            MathTex(r"\text{By Birkhoff's Theorem, its exterior metric}", font_size=36, color=GREEN),
+            MathTex(r"\text{must be the Schwarzschild solution.}", font_size=36, color=GREEN),
+
+            MathTex(r"\text{Schwarzschild metric has a horizon at } r=r_s.", font_size=40, color=YELLOW),
+
+            MathTex(
+                r"ds^2 = -\left(1-\frac{2GM}{c^2 r}\right)c^2 dt^2 + \cdots",
+                font_size=38, color=BLUE
+            ),
+
+            MathTex(
+                r"\text{Horizon occurs when } 1-\frac{2GM}{c^2 r}=0.",
+                font_size=38, color=GREEN
+            ),
+
+            MathTex(
+                r"\Rightarrow r_s = \frac{2GM}{c^2}",
+                font_size=46, color=YELLOW
+            ),
+
+            MathTex(
+                r"\text{Thus, the planet becomes a black hole if}",
+                font_size=36, color=ORANGE
+            ),
+
+            MathTex(
+                r"\boxed{\,R \le r_s = \frac{2GM}{c^2}\,}",
+                font_size=48, color=YELLOW
+            ),
+
+            MathTex(
+                r"\text{Optional density form:}", font_size=34, color=GREEN
+            ),
+
+            MathTex(
+                r"r_s = \sqrt{\frac{3c^2}{8\pi G\,\rho}}",
+                font_size=44, color=BLUE
+            ),
+        ]
+
+        for step in steps_list:
+            add_step(step)
+
         self.wait(2)
 
-        # -----------------------------
-        # Dynamic continuous rotation
-        # -----------------------------
-        for _ in range(4):
-            self.play(Rotate(edge_lines, angle=2*np.pi, axis=OUT, run_time=3))
-            self.wait(0.5)
-
-        # Cleanup
-        edge_lines.remove_updater(tesseract_updater)
-        self.play(FadeOut(edge_lines), FadeOut(question), FadeOut(answer), FadeOut(label))
-        self.wait(0.5)
-
-        final_text = Text("4D in 3D — Mind blown!", font_size=36, color=YELLOW)
+        # Final closing text
+        self.clear()
+        final_text = Text("Schwarzschild radius derived! 🌑", font_size=34, color=YELLOW)
         final_text.move_to(ORIGIN)
-        self.play(Write(final_text))
+        self.play(Write(final_text, run_time=2))
         self.wait(2)
