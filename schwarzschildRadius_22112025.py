@@ -13,24 +13,83 @@ class SchwarzschildNewtonian(Scene):
         # -----------------------------
         # Layout helpers
         # -----------------------------
-        left_padding = 1.5
-        right_padding = 0.3
+        left_padding = 1.0
+        right_padding = 1.0
         text_width = config.frame_width - left_padding - right_padding
         start_y = config.frame_height / 4
 
         steps_group = VGroup()
 
+        def create_stickman(center_point):
+            """Create a stickman with lower arms and angled left arm downwards."""
+            head_radius = 0.15
+            body_length = 0.4
+            arm_length = 0.25
+            leg_length = 0.4
+
+            head = Circle(radius=head_radius, color=YELLOW).move_to(center_point + UP * (body_length/2))
+
+            body_top = center_point + UP * (head_radius - 0.075)
+            body_bottom = center_point + DOWN * (body_length - head_radius)
+            body = Line(body_top, body_bottom, color=YELLOW)
+
+            # Arms lower vertically, left arm angled downwards
+            arm_y_offset = -0.05
+            arm_left = Line(
+                body_top + LEFT * 0.05 + UP * arm_y_offset, 
+                body_top + LEFT * arm_length + DOWN * 0.05,
+                color=YELLOW
+            )
+            arm_right = Line(
+                body_top + RIGHT * 0.05 + UP * arm_y_offset, 
+                body_top + RIGHT * arm_length + UP * 0.05,
+                color=YELLOW
+            )
+
+            # Legs angled outward
+            leg_left = Line(body_bottom, body_bottom + LEFT * leg_length + DOWN * 0.4, color=YELLOW)
+            leg_right = Line(body_bottom, body_bottom + RIGHT * leg_length + DOWN * 0.4, color=YELLOW)
+
+            stickman = VGroup(head, body, arm_left, arm_right, leg_left, leg_right)
+            return stickman
+
         def add_step(step_mob):
+            """Add a step with stickman appearing below the step, then disappearing."""
             step_mob.set_width(min(step_mob.width, text_width))
             steps_group.add(step_mob)
 
+            # Position the step
             if len(steps_group) == 1:
                 step_mob.move_to(UP * start_y)
             else:
                 step_mob.next_to(steps_group[-2], DOWN, buff=0.7)
 
-            self.play(Write(step_mob), run_time=1)
+            # Add stickman below the step
+            stickman = create_stickman(step_mob.get_bottom() + DOWN * 0.4)
+            self.add(stickman)
 
+            # Short pointer from right hand to text
+            pointer_length = 0.4
+            pointer = Line(stickman[3].get_end(), stickman[3].get_end() + RIGHT * pointer_length, color=YELLOW, stroke_width=2)
+            self.add(pointer)
+
+            # Function to move pointer along the text
+            def update_man(pointer, step_mob, alpha):
+                start = step_mob.get_left()
+                end = step_mob.get_right()
+                target_pos = start + alpha * (end - start)
+                pointer.put_start_and_end_on(stickman[3].get_end(), stickman[3].get_end() + 0.5*(target_pos - stickman[3].get_end()))
+
+            # Play writing animation with pointer movement
+            self.play(
+                Write(step_mob, run_time=1.5, rate_func=linear),
+                UpdateFromAlphaFunc(pointer, lambda mob, alpha: update_man(mob, step_mob, alpha))
+            )
+
+            # Remove stickman and pointer after writing
+            self.remove(stickman, pointer)
+
+            # Scroll previous steps if more than 4
             if len(steps_group) > 4:
                 prev_step = steps_group[-5]
                 shift_amount = prev_step.height + 0.7
@@ -54,9 +113,7 @@ class SchwarzschildNewtonian(Scene):
         # -----------------------------
         # Question slide with padding
         # -----------------------------
-        q_left_padding = 1.0
-        q_right_padding = 1.0
-        max_question_width = config.frame_width - q_left_padding - q_right_padding
+        max_question_width = text_width
 
         question_text1 = Text("Q: What is ", font_size=34, color=WHITE)
         question_text2 = Text("Schwarzschild Radius?", font_size=34, color=WHITE)
@@ -80,7 +137,7 @@ class SchwarzschildNewtonian(Scene):
             MathTex(r"\text{The Schwarzschild radius is}", font_size=38, color=GREEN),
             MathTex(r"\text{the size an object must shrink to}", font_size=38, color=GREEN),
             MathTex(r"\text{so that even light can’t escape.}", font_size=38, color=GREEN),
-            MathTex(r"1.\ \text{Escape velocity: }}", font_size=38, color=ORANGE),
+            MathTex(r"1.\ \text{Escape velocity: }", font_size=38, color=ORANGE),
             MathTex(r"v_e = \sqrt{\tfrac{2GM}{r}}", font_size=38, color=ORANGE),
             MathTex(r"2.\ \text{Set escape velocity equal to speed of light: }", font_size=38, color=GREEN),
             MathTex(r"v_e = c", font_size=38, color=GREEN),
@@ -139,7 +196,7 @@ class SchwarzschildNewtonian(Scene):
 
         # Closing text
         self.clear()
-        final_text = Text("Naild it!", font_size=32, color=YELLOW)
+        final_text = Text("Nailed it!", font_size=32, color=YELLOW)
         final_text.move_to(ORIGIN)
         self.play(Write(final_text, run_time=2))
         self.wait(2)
