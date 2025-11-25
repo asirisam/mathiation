@@ -10,15 +10,13 @@ config.background_color = BLACK
 
 class CircleEquationProof(Scene):
     def construct(self):
-
         # -----------------------------
         # Title
         # -----------------------------
-        title = Text("Equation of a Circle", font_size=48, color=YELLOW)
-        title.move_to(ORIGIN)
-        self.play(FadeIn(title, shift=UP))
-        self.wait(2)
-        self.play(FadeOut(title, shift=DOWN))
+        title = Text("Equation of a Circle", font_size=40, color=YELLOW)
+        self.play(FadeIn(title, shift=UP), run_time=2)
+        self.wait(0.75)
+        self.play(FadeOut(title, shift=DOWN), run_time=1)
 
         # -----------------------------
         # Question with padding
@@ -26,53 +24,49 @@ class CircleEquationProof(Scene):
         left_padding = 1.0
         right_padding = 1.0
         top_padding = 1.5
-
         text_width = config.frame_width - left_padding - right_padding
 
-        question = Text(
-            "Prove the equation of a circle",
-            font_size=46,
-            color=ORANGE
-        )
-        equation = MathTex(
-            r"(x-h)^2 + (y-k)^2 = r^2",
-            font_size=48,
-            color=BLUE
-        )
+        question = Text("Prove the equation of a circle", font_size=46, color=ORANGE)
+        equation = MathTex(r"(x-h)^2 + (y-k)^2 = r^2", font_size=48, color=BLUE)
 
         question_group = VGroup(question, equation).arrange(DOWN, buff=0.5)
         question_group.set_width(text_width)
+        question_group.move_to(ORIGIN + UP * (top_padding / 2))
 
-        # vertically centred WITH top padding
-        question_group.move_to(
-            ORIGIN + UP * (top_padding / 2)
-        )
+        self.play(FadeIn(question_group, shift=UP), run_time=1.5)
+        self.wait(1.0)
+        self.play(FadeOut(question_group, shift=DOWN), run_time=1)
 
-        self.play(FadeIn(question_group, shift=UP))
-        self.wait(2)
-        self.play(FadeOut(question_group, shift=DOWN))
-
-        # -------------------------------------------------------
-        # Circle Drawing (separate slide, before steps)
-        # -------------------------------------------------------
-        center = Dot(ORIGIN, color=YELLOW)
+        # -----------------------------
+        # Circle Drawing (animated)
+        # -----------------------------
+        circle_center = ORIGIN
+        radius = 2.0
+        circle = Circle(radius=radius, color=BLUE).move_to(circle_center)
+        center = Dot(circle_center, color=YELLOW)
         center_label = MathTex("(h,k)", color=YELLOW).next_to(center, DOWN)
 
-        circle = Circle(radius=2.5, color=BLUE)
-        circle.move_to(ORIGIN)
+        # Place the point exactly at the top of the circle
+        angle = PI/2  # top
+        point_pos = circle_center + radius * UP
+        point = Dot(point_pos, color=RED)
+        point_label = MathTex("(x,y)", color=RED).next_to(point, UP)
 
-        point = Dot(RIGHT*2 + UP*1, color=RED)
-        point_label = MathTex("(x,y)", color=RED).next_to(point, RIGHT)
+        # Radius line connecting center to point
+        radius_line = Line(circle_center, point_pos, color=GREEN)
+        radius_label = MathTex("r", color=GREEN).next_to(radius_line.get_center(), UP*0.2)
 
-        radius_line = Line(center.get_center(), point.get_center(), color=GREEN)
-        radius_label = MathTex("r", color=GREEN).next_to(radius_line, UP*0.2)
-
-        self.play(Create(circle), FadeIn(center), Write(center_label))
+        self.play(Create(circle), run_time=1.5)
+        self.play(FadeIn(center), Write(center_label))
         self.play(FadeIn(point), Write(point_label))
         self.play(Create(radius_line), Write(radius_label))
         self.wait(1.5)
 
-        # fade everything before moving to next slide
+        # Highlight animation
+        self.play(center.animate.set_fill(YELLOW, opacity=0.5), run_time=0.5)
+        self.play(point.animate.set_fill(RED, opacity=0.5), run_time=0.5)
+        self.wait(0.5)
+
         self.play(
             FadeOut(point),
             FadeOut(point_label),
@@ -80,19 +74,20 @@ class CircleEquationProof(Scene):
             FadeOut(radius_label),
             FadeOut(circle),
             FadeOut(center),
-            FadeOut(center_label)
+            FadeOut(center_label),
+            run_time=1
         )
 
-        # -------------------------------------------------------
-        # STEPS SLIDE (starts AFTER circle drawing)
-        # -------------------------------------------------------
+        # -----------------------------
+        # Steps slide (animated)
+        # -----------------------------
         left_padding = 1.2
         right_padding = 0.3
         text_width = config.frame_width - left_padding - right_padding
         start_y = config.frame_height / 4
         steps_group = VGroup()
 
-        # --- stickman function (unchanged) ---
+        # --- stickman function (unchanged from original) ---
         def create_stickman(center_point):
             head_radius = 0.15
             body_length = 0.4
@@ -113,7 +108,7 @@ class CircleEquationProof(Scene):
                              body_bottom + RIGHT*leg_length + DOWN*0.4, color=YELLOW)
             return VGroup(head, body, arm_left, arm_right, leg_left, leg_right)
 
-        # --- step adding behaviour (unchanged) ---
+        # --- add_step function with Write animation & stickman ---
         def add_step(step_mob):
             step_mob.set_width(min(step_mob.width, text_width))
             steps_group.add(step_mob)
@@ -123,9 +118,11 @@ class CircleEquationProof(Scene):
             else:
                 step_mob.next_to(steps_group[-2], DOWN, buff=0.7)
 
+            # Add stickman as in original script
             stickman = create_stickman(step_mob.get_bottom() + DOWN*0.4)
             self.add(stickman)
 
+            # Pointer line
             pointer = Line(
                 stickman[3].get_end(),
                 stickman[3].get_end() + RIGHT*0.5,
@@ -139,6 +136,7 @@ class CircleEquationProof(Scene):
                 target = start + alpha * (end - start)
                 pointer.put_start_and_end_on(stickman[3].get_end(), target)
 
+            # Animate letters writing automatically
             self.play(
                 Write(step_mob, run_time=1.5),
                 UpdateFromAlphaFunc(pointer, lambda mob, alpha: update_man(mob, step_mob, alpha))
@@ -153,26 +151,32 @@ class CircleEquationProof(Scene):
                 self.wait(0.5)
 
         # -----------------------------
-        # Steps List (proof of circle equation)
+        # Steps list
         # -----------------------------
         steps_list = [
-            MathTex(r"\text{Step 1: Definition - A circle is all points at a fixed distance } r \text{ from } (h,k)", font_size=32, color=BLUE),
-            MathTex(r"\text{Step 2: Distance formula: } d = \sqrt{(x-h)^2 + (y-k)^2}", font_size=32, color=YELLOW),
-            MathTex(r"\text{Step 3: Set distance = radius: } \sqrt{(x-h)^2 + (y-k)^2} = r", font_size=32, color=GREEN),
-            MathTex(r"\text{Step 4: Square both sides: } (x-h)^2 + (y-k)^2 = r^2", font_size=36, color=ORANGE),
-            MathTex(r"\text{Step 5: Expand to general form: } x^2 + y^2 - 2hx - 2ky + (h^2 + k^2 - r^2) = 0", font_size=32, color=RED),
+            MathTex(r"\text{Step 1: Definition } r \text{ from } (h,k)", font_size=32, color=BLUE),
+            MathTex(r"\text{A circle is all points at a fixed distance } r \text{ from } (h,k)", font_size=32, color=GREEN),
+            MathTex(r"\text{Step 2: Distance formula: }", font_size=32, color=YELLOW),
+            MathTex(r"d = \sqrt{(x-h)^2 + (y-k)^2}", font_size=32, color=GREEN),
+            MathTex(r"\text{Step 3: Set distance = radius: }", font_size=32, color=YELLOW),
+            MathTex(r"\sqrt{(x-h)^2 + (y-k)^2} = r", font_size=32, color=GREEN),
+            MathTex(r"\text{Step 4: Square both sides: }", font_size=36, color=ORANGE),
+            MathTex(r"(x-h)^2 + (y-k)^2 = r^2", font_size=36, color=GREEN),
+            MathTex(r"\text{Step 5: Expand to general form: }", font_size=32, color=RED),
+            MathTex(r"x^2 + y^2 - 2hx - 2ky + (h^2 + k^2 - r^2) = 0", font_size=32, color=GREEN),
             MathTex(r"\text{Step 6: Recover centre and radius from general form: }", font_size=32, color=BLUE),
             MathTex(r"x^2 + y^2 + Dx + Ey + F = 0 \quad \Rightarrow \quad \text{Centre } (-D/2,-E/2), \; r^2 = (D/2)^2 + (E/2)^2 - F", font_size=32, color=GREEN),
-            MathTex(r"\text{Step 7: Parametric form: } x = h + r \cos\theta, \; y = k + r \sin\theta, \; \theta \in [0,2\pi)", font_size=32, color=ORANGE),
-            MathTex(r"\text{Example: } x^2 + y^2 - 6x + 4y - 3 = 0 \quad \Rightarrow \quad \text{Centre } (3,-2), \; r = 4", font_size=32, color=YELLOW),
+            MathTex(r"\text{Step 7: Parametric form: }", font_size=32, color=ORANGE),
+            MathTex(r"x = h + r \cos\theta, \; y = k + r \sin\theta, \; \theta \in [0,2\pi)", font_size=32, color=GREEN)
         ]
 
+        # Add steps with Write animation
         for step in steps_list:
             add_step(step)
 
         # Ending
-        self.wait(1.5)
-        self.clear()
-        final_text = Text("You proved it!", font_size=40, color=YELLOW)
-        self.play(Write(final_text))
+        self.wait(1)
+        final_text = Text("Nailed it!", font_size=40, color=YELLOW)
+        final_text.move_to(ORIGIN)
+        self.play(FadeIn(final_text, shift=UP), run_time=1.5)
         self.wait(2)
