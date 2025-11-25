@@ -18,24 +18,26 @@ class Root2Irrational(Scene):
         text_width = config.frame_width - left_padding - right_padding
 
         # Title
-        title = Text("Irrational Rebel", font_size=50, color=YELLOW)
+        title = Text("Irrational Rebel", font_size=40, color=YELLOW)
         title.move_to(ORIGIN)
         self.play(FadeIn(title, shift=UP))
         self.wait(1.5)
         self.play(FadeOut(title, shift=DOWN))
 
-        # Question
+        # Question (vertically and horizontally centered)
         question_text = (
             "Q: Prove that √2 is irrational.\n"
             "Use contradiction and any required theorem."
         )
         question = Text(
-            question_text, 
+            question_text,
             font_size=30,
             color=WHITE,
             line_spacing=1.2,
         )
-        question.move_to(ORIGIN)
+        question.set_width(config.frame_width - left_padding - right_padding)  # horizontal padding
+        question.move_to(ORIGIN)  # vertical center
+
         self.play(Write(question))
         self.wait(2)
         self.play(FadeOut(question, shift=DOWN))
@@ -53,21 +55,12 @@ class Root2Irrational(Scene):
             leg_length = 0.4
 
             head = Circle(radius=head_radius, color=color, fill_opacity=1).move_to(center_point + UP * (body_length/2))
-
             body_top = center_point + UP * (head_radius - 0.05)
             body_bottom = center_point + DOWN * (body_length - head_radius)
             body = Line(body_top, body_bottom, color=color)
 
-            arm_left = Line(
-                body_top,
-                body_top + LEFT * arm_length + DOWN * arm_length,
-                color=color
-            )
-            arm_right = Line(
-                body_top + RIGHT * 0.05,
-                body_top + RIGHT * arm_length + DOWN * 0.05,
-                color=color
-            )
+            arm_left = Line(body_top, body_top + LEFT * arm_length + DOWN * arm_length, color=color)
+            arm_right = Line(body_top + RIGHT * 0.05, body_top + RIGHT * arm_length + DOWN * 0.05, color=color)
 
             leg_left = Line(body_bottom, body_bottom + LEFT * leg_length + DOWN * 0.35, color=color)
             leg_right = Line(body_bottom, body_bottom + RIGHT * leg_length + DOWN * 0.35, color=color)
@@ -121,32 +114,22 @@ class Root2Irrational(Scene):
             else:
                 self.wait(0.5)
 
-        # -----------------------------------------
         # Steps for the irrationality of √2
-        # -----------------------------------------
         steps_list = [
-
             MathTex(r"\textbf{Theorem: } \sqrt{2} \text{ is irrational}", font_size=42, color=YELLOW),
             MathTex(r"\text{Proof uses: Contradiction}", font_size=38, color=ORANGE),
-
             MathTex(r"\text{Step 1: Assume } \sqrt{2} = \frac{p}{q}", font_size=38, color=WHITE),
             MathTex(r"\text{where } p,q \text{ are integers in lowest terms}", font_size=34, color=GREEN),
-
             MathTex(r"\text{Step 2: Square both sides}", font_size=38, color=ORANGE),
             MathTex(r"2 = \frac{p^2}{q^2} \Rightarrow p^2 = 2q^2", font_size=40, color=BLUE),
-
             MathTex(r"\text{Step 3: } p^2 \text{ is even } \Rightarrow p \text{ is even}", font_size=38, color=PINK),
             MathTex(r"p = 2k", font_size=40, color=WHITE),
-
             MathTex(r"\text{Step 4: Substitute } p = 2k", font_size=38, color=ORANGE),
             MathTex(r"4k^2 = 2q^2 \Rightarrow q^2 \text{ is even}", font_size=40, color=BLUE),
-
             MathTex(r"\text{So } q \text{ is even}", font_size=38, color=PINK),
-
             MathTex(r"\text{Step 5: Contradiction!}", font_size=38, color=RED),
             MathTex(r"\text{Both } p \text{ and } q \text{ even }", font_size=36, color=RED),
             MathTex(r"\text{But fraction was in lowest terms}", font_size=36, color=RED),
-
             MathTex(r"\textbf{Conclusion: } \sqrt{2} \text{ is irrational}", font_size=42, color=YELLOW),
         ]
 
@@ -158,7 +141,7 @@ class Root2Irrational(Scene):
 
         # Ending text
         self.clear()
-        final_text = Text("Nailed it!", font_size=50, color=YELLOW)
+        final_text = Text("Nailed it!", font_size=40, color=YELLOW)
         final_text.move_to(ORIGIN)
         self.play(Write(final_text, run_time=2))
         self.wait(2)
