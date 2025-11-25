@@ -13,7 +13,7 @@ class CircleEquationProof(Scene):
         # -----------------------------
         # Title
         # -----------------------------
-        title = Text("Equation of a Circle", font_size=40, color=YELLOW)
+        title = Text("Circle Quest", font_size=40, color=YELLOW)
         self.play(FadeIn(title, shift=UP), run_time=2)
         self.wait(0.75)
         self.play(FadeOut(title, shift=DOWN), run_time=1)
@@ -41,20 +41,21 @@ class CircleEquationProof(Scene):
         # Circle Drawing (animated)
         # -----------------------------
         circle_center = ORIGIN
-        radius = 2.0
+        radius = 1.9
         circle = Circle(radius=radius, color=BLUE).move_to(circle_center)
         center = Dot(circle_center, color=YELLOW)
         center_label = MathTex("(h,k)", color=YELLOW).next_to(center, DOWN)
 
         # Place the point exactly at the top of the circle
-        angle = PI/2  # top
         point_pos = circle_center + radius * UP
         point = Dot(point_pos, color=RED)
         point_label = MathTex("(x,y)", color=RED).next_to(point, UP)
 
         # Radius line connecting center to point
         radius_line = Line(circle_center, point_pos, color=GREEN)
-        radius_label = MathTex("r", color=GREEN).next_to(radius_line.get_center(), UP*0.2)
+
+        # Move 'r' label to the right of the vertical radius line
+        radius_label = MathTex("r", color=GREEN).next_to(radius_line, RIGHT, buff=0.2)
 
         self.play(Create(circle), run_time=1.5)
         self.play(FadeIn(center), Write(center_label))
@@ -87,7 +88,7 @@ class CircleEquationProof(Scene):
         start_y = config.frame_height / 4
         steps_group = VGroup()
 
-        # --- stickman function (unchanged from original) ---
+        # --- stickman function (unchanged) ---
         def create_stickman(center_point):
             head_radius = 0.15
             body_length = 0.4
@@ -165,7 +166,8 @@ class CircleEquationProof(Scene):
             MathTex(r"\text{Step 5: Expand to general form: }", font_size=32, color=RED),
             MathTex(r"x^2 + y^2 - 2hx - 2ky + (h^2 + k^2 - r^2) = 0", font_size=32, color=GREEN),
             MathTex(r"\text{Step 6: Recover centre and radius from general form: }", font_size=32, color=BLUE),
-            MathTex(r"x^2 + y^2 + Dx + Ey + F = 0 \quad \Rightarrow \quad \text{Centre } (-D/2,-E/2), \; r^2 = (D/2)^2 + (E/2)^2 - F", font_size=32, color=GREEN),
+            MathTex(r"x^2 + y^2 + Dx + Ey + F = 0 \quad \Rightarrow \quad", font_size=32, color=GREEN),
+            MathTex(r"\text{Centre } (-D/2,-E/2), \; r^2 = (D/2)^2 + (E/2)^2 - F", font_size=32, color=GREEN),
             MathTex(r"\text{Step 7: Parametric form: }", font_size=32, color=ORANGE),
             MathTex(r"x = h + r \cos\theta, \; y = k + r \sin\theta, \; \theta \in [0,2\pi)", font_size=32, color=GREEN)
         ]
@@ -173,10 +175,11 @@ class CircleEquationProof(Scene):
         # Add steps with Write animation
         for step in steps_list:
             add_step(step)
-
-        # Ending
         self.wait(1)
+        # -----------------------------
+        # Final text on a new slide
+        # -----------------------------
+        self.clear()
         final_text = Text("Nailed it!", font_size=40, color=YELLOW)
-        final_text.move_to(ORIGIN)
         self.play(FadeIn(final_text, shift=UP), run_time=1.5)
         self.wait(2)
