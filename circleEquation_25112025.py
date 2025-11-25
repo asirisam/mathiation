@@ -153,15 +153,18 @@ class CircleEquationProof(Scene):
                 self.wait(0.5)
 
         # -----------------------------
-        # Steps List (proof)
+        # Steps List (proof of circle equation)
         # -----------------------------
         steps_list = [
-            MathTex(r"\text{A circle = all points distance } r \text{ from } (h,k)", font_size=36, color=BLUE),
-            MathTex(r"d = \sqrt{(x-h)^2 + (y-k)^2}", font_size=40, color=YELLOW),
-            MathTex(r"\text{For any point on the circle: } d = r", font_size=36, color=GREEN),
-            MathTex(r"\sqrt{(x-h)^2 + (y-k)^2} = r", font_size=38, color=RED),
-            MathTex(r"(x-h)^2 + (y-k)^2 = r^2", font_size=42, color=ORANGE),
-            MathTex(r"\boxed{(x-h)^2 + (y-k)^2 = r^2}", font_size=48, color=BLUE),
+            MathTex(r"\text{Step 1: Definition - A circle is all points at a fixed distance } r \text{ from } (h,k)", font_size=32, color=BLUE),
+            MathTex(r"\text{Step 2: Distance formula: } d = \sqrt{(x-h)^2 + (y-k)^2}", font_size=32, color=YELLOW),
+            MathTex(r"\text{Step 3: Set distance = radius: } \sqrt{(x-h)^2 + (y-k)^2} = r", font_size=32, color=GREEN),
+            MathTex(r"\text{Step 4: Square both sides: } (x-h)^2 + (y-k)^2 = r^2", font_size=36, color=ORANGE),
+            MathTex(r"\text{Step 5: Expand to general form: } x^2 + y^2 - 2hx - 2ky + (h^2 + k^2 - r^2) = 0", font_size=32, color=RED),
+            MathTex(r"\text{Step 6: Recover centre and radius from general form: }", font_size=32, color=BLUE),
+            MathTex(r"x^2 + y^2 + Dx + Ey + F = 0 \quad \Rightarrow \quad \text{Centre } (-D/2,-E/2), \; r^2 = (D/2)^2 + (E/2)^2 - F", font_size=32, color=GREEN),
+            MathTex(r"\text{Step 7: Parametric form: } x = h + r \cos\theta, \; y = k + r \sin\theta, \; \theta \in [0,2\pi)", font_size=32, color=ORANGE),
+            MathTex(r"\text{Example: } x^2 + y^2 - 6x + 4y - 3 = 0 \quad \Rightarrow \quad \text{Centre } (3,-2), \; r = 4", font_size=32, color=YELLOW),
         ]
 
         for step in steps_list:
