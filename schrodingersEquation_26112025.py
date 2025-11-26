@@ -13,20 +13,20 @@ class CircleEquationProof(Scene):
         # -----------------------------
         # Title
         # -----------------------------
-        title = Text("Schrödinger Wave", font_size=40, color=YELLOW)
+        title = Text("Schrödinger's Equation", font_size=30, color=YELLOW)
         self.play(FadeIn(title, shift=UP), run_time=2)
         self.wait(0.75)
         self.play(FadeOut(title, shift=DOWN), run_time=1)
 
         # -----------------------------
-        # Question with padding
+        # Question
         # -----------------------------
         left_padding = 1.0
         right_padding = 1.0
         top_padding = 1.5
         text_width = config.frame_width - left_padding - right_padding
 
-        question = Text("Derive Schrödinger's Equation", font_size=46, color=ORANGE)
+        question = Text("Let's derive", font_size=46, color=ORANGE)
         equation = MathTex(
             r"i \hbar \frac{\partial}{\partial t} \Psi(\mathbf{r},t) = "
             r"\left[ -\frac{\hbar^2}{2m} \nabla^2 + V(\mathbf{r}) \right] \Psi(\mathbf{r},t]",
@@ -42,7 +42,7 @@ class CircleEquationProof(Scene):
         self.play(FadeOut(question_group, shift=DOWN), run_time=1)
 
         # -----------------------------
-        # Steps slide (animated)
+        # Steps animation
         # -----------------------------
         left_padding = 1.2
         right_padding = 0.3
@@ -109,18 +109,18 @@ class CircleEquationProof(Scene):
                 self.wait(0.5)
 
         steps_list = [
-            MathTex(r"\text{Step 1: Classical energy }", font_size=32, color=BLUE),
-            MathTex(r"E = \frac{p^2}{2m} + V", font_size=32, color=BLUE),
-            MathTex(r"\text{Step 2: Replace }", font_size=32, color=GREEN),
+            MathTex(r"\text{Step 1: Classical Energy }", font_size=32, color=BLUE),
+            MathTex(r"E = \frac{p^2}{2m} + V", font_size=32, color=GREEN),
+            MathTex(r"\text{Step 2: Quantization Replacement }", font_size=32, color=GREEN),
             MathTex(r"p \to -i\hbar\nabla, \ E \to i \hbar \partial_t", font_size=32, color=GREEN),
-            MathTex(r"\text{Step 3: Hamiltonian }", font_size=32, color=YELLOW),
-            MathTex(r"\hat{H} = \frac{\hat{p}^2}{2m} + V(\mathbf{r})", font_size=32, color=YELLOW),
-            MathTex(r"\text{Step 4: Schrödinger eq.: }", font_size=32, color=ORANGE),
-            MathTex(r"i \hbar \partial_t \Psi = \hat{H} \Psi", font_size=32, color=ORANGE),
-            MathTex(r"\text{Step 5: Substitute kinetic term }", font_size=32, color=GREEN),
+            MathTex(r"\text{Step 3: Hamiltonian Operator}", font_size=32, color=YELLOW),
+            MathTex(r"\hat{H} = \frac{\hat{p}^2}{2m} + V(\mathbf{r})", font_size=32, color=GREEN),
+            MathTex(r"\text{Step 4: Schrödinger Equation }", font_size=32, color=ORANGE),
+            MathTex(r"i \hbar \partial_t \Psi = \hat{H} \Psi", font_size=32, color=GREEN),
+            MathTex(r"\text{Step 5: Substitute Kinetic Term }", font_size=32, color=PINK),
             MathTex(r"\hat{H} = -\frac{\hbar^2}{2m}\nabla^2 + V", font_size=32, color=GREEN),
-            MathTex(r"\text{Step 6: Final form }", font_size=32, color=BLUE),
-            MathTex(r"i \hbar \partial_t \Psi = \left[-\frac{\hbar^2}{2m}\nabla^2 + V(\mathbf{r})\right]\Psi", font_size=32, color=BLUE)
+            MathTex(r"\text{Step 6: Final Form }", font_size=32, color=BLUE),
+            MathTex(r"i \hbar \partial_t \Psi = \left[-\frac{\hbar^2}{2m}\nabla^2 + V(\mathbf{r})\right]\Psi", font_size=32, color=GREEN)
         ]
 
         for step in steps_list:
@@ -128,14 +128,12 @@ class CircleEquationProof(Scene):
         self.wait(1)
 
         # -----------------------------
-        # GRAPH SLIDE (updated)
+        # GRAPH SLIDE
         # -----------------------------
         self.clear()
 
         graph_title = Text("Free Particle Wave Packet", font_size=30, color=ORANGE)
         graph_title.to_edge(UP, buff=1.5)
-
-        # Letter-by-letter animation
         self.play(Write(graph_title), run_time=2)
 
         axes = Axes(
@@ -146,21 +144,17 @@ class CircleEquationProof(Scene):
             tips=False,
             axis_config={"include_numbers": True, "font_size": 24}
         )
-
         self.play(Create(axes), run_time=2)
 
-        x_label = MathTex("x", font_size=30).next_to(axes.x_axis.get_end(), DOWN)
+        x_label = MathTex("x", font_size=30).next_to(axes.x_axis.get_end(), DOWN, buff=0.5)
         y_label = MathTex("\\Psi(x)", font_size=30).next_to(axes.y_axis.get_top(), LEFT)
-
         self.play(Write(x_label), Write(y_label), run_time=1.5)
 
-        # Wave packet parameters
         x0 = -2
         sigma = 0.8
         k0 = 5
         m = 1
         hbar = 1
-
         t_tracker = ValueTracker(0)
 
         def psi_real(x):
@@ -174,24 +168,24 @@ class CircleEquationProof(Scene):
             return np.real(psi)
 
         wavefunction = always_redraw(lambda: axes.plot(psi_real, color=BLUE))
-
-        #psi_label = axes.get_graph_label(wavefunction, label="\\Psi(x)")
-        #psi_label.shift(DOWN * 0.3)
-
         self.play(Create(wavefunction), run_time=4)
-
-        # Shorter animation duration
         self.play(t_tracker.animate.set_value(8), run_time=4, rate_func=linear)
-
         self.wait(0.5)
 
         # -----------------------------
-        # Final text
+        # FINAL SLIDE: "Nailed it!"
         # -----------------------------
-        final_text = Text("Nailed it!", font_size=40, color=YELLOW)
         self.play(
-            FadeOut(graph_title), FadeOut(axes), FadeOut(x_label),
-            FadeOut(y_label), FadeOut(wavefunction)
+            FadeOut(graph_title), FadeOut(axes),
+            FadeOut(x_label), FadeOut(y_label),
+            FadeOut(wavefunction)
         )
-        self.play(FadeIn(final_text, shift=UP), run_time=1.5)
+        self.wait(0.3)
+
+        self.wait(1)
+        # Ending text
+        self.clear()
+        final_text = Text("Nailed it!", font_size=30, color=YELLOW)
+        final_text.move_to(ORIGIN)
+        self.play(Write(final_text, run_time=2))
         self.wait(2)
