@@ -79,7 +79,7 @@ class CircleEquationProof(Scene):
             else:
                 step_mob.next_to(steps_group[-2], DOWN, buff=0.7)
 
-            stickman = create_stickman(step_mob.get_bottom() + DOWN*0.4)
+            stickman = create_stickman(step_mob.get_bottom() + DOWN*1.0)
             self.add(stickman)
 
             pointer = Line(
