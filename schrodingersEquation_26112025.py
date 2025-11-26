@@ -13,7 +13,7 @@ class CircleEquationProof(Scene):
         # -----------------------------
         # Title
         # -----------------------------
-        title = Text("Quantum Quest", font_size=40, color=YELLOW)
+        title = Text("Schrödinger Wave", font_size=40, color=YELLOW)
         self.play(FadeIn(title, shift=UP), run_time=2)
         self.wait(0.75)
         self.play(FadeOut(title, shift=DOWN), run_time=1)
@@ -108,16 +108,19 @@ class CircleEquationProof(Scene):
             else:
                 self.wait(0.5)
 
-        # -----------------------------
-        # Steps list
-        # -----------------------------
         steps_list = [
-            MathTex(r"\text{Step 1: Classical energy } E = \frac{p^2}{2m} + V", font_size=32, color=BLUE),
-            MathTex(r"\text{Step 2: Replace } p \to -i\hbar\nabla, \ E \to i \hbar \partial_t", font_size=32, color=GREEN),
-            MathTex(r"\text{Step 3: Hamiltonian } \hat{H} = \frac{\hat{p}^2}{2m} + V(\mathbf{r})", font_size=32, color=YELLOW),
-            MathTex(r"\text{Step 4: Schrödinger eq.: } i \hbar \partial_t \Psi = \hat{H} \Psi", font_size=32, color=ORANGE),
-            MathTex(r"\text{Step 5: Substitute kinetic term } \hat{H} = -\frac{\hbar^2}{2m}\nabla^2 + V", font_size=32, color=GREEN),
-            MathTex(r"\text{Step 6: Final form } i \hbar \partial_t \Psi = \left[-\frac{\hbar^2}{2m}\nabla^2 + V(\mathbf{r})\right]\Psi", font_size=32, color=BLUE)
+            MathTex(r"\text{Step 1: Classical energy }", font_size=32, color=BLUE),
+            MathTex(r"E = \frac{p^2}{2m} + V", font_size=32, color=BLUE),
+            MathTex(r"\text{Step 2: Replace }", font_size=32, color=GREEN),
+            MathTex(r"p \to -i\hbar\nabla, \ E \to i \hbar \partial_t", font_size=32, color=GREEN),
+            MathTex(r"\text{Step 3: Hamiltonian }", font_size=32, color=YELLOW),
+            MathTex(r"\hat{H} = \frac{\hat{p}^2}{2m} + V(\mathbf{r})", font_size=32, color=YELLOW),
+            MathTex(r"\text{Step 4: Schrödinger eq.: }", font_size=32, color=ORANGE),
+            MathTex(r"i \hbar \partial_t \Psi = \hat{H} \Psi", font_size=32, color=ORANGE),
+            MathTex(r"\text{Step 5: Substitute kinetic term }", font_size=32, color=GREEN),
+            MathTex(r"\hat{H} = -\frac{\hbar^2}{2m}\nabla^2 + V", font_size=32, color=GREEN),
+            MathTex(r"\text{Step 6: Final form }", font_size=32, color=BLUE),
+            MathTex(r"i \hbar \partial_t \Psi = \left[-\frac{\hbar^2}{2m}\nabla^2 + V(\mathbf{r})\right]\Psi", font_size=32, color=BLUE)
         ]
 
         for step in steps_list:
@@ -125,16 +128,16 @@ class CircleEquationProof(Scene):
         self.wait(1)
 
         # -----------------------------
-        # Graph slide: moving wave packet
+        # GRAPH SLIDE (updated)
         # -----------------------------
         self.clear()
 
-        # Graph title with top padding
         graph_title = Text("Free Particle Wave Packet", font_size=30, color=ORANGE)
-        top_padding = 1.5  # distance from top
-        graph_title.to_edge(UP, buff=top_padding)
+        graph_title.to_edge(UP, buff=1.5)
 
-        # Axes (keep centered)
+        # Letter-by-letter animation
+        self.play(Write(graph_title), run_time=2)
+
         axes = Axes(
             x_range=[-5, 5, 1],
             y_range=[-1.5, 1.5, 0.5],
@@ -144,9 +147,12 @@ class CircleEquationProof(Scene):
             axis_config={"include_numbers": True, "font_size": 24}
         )
 
-        # Axis labels
+        self.play(Create(axes), run_time=2)
+
         x_label = MathTex("x", font_size=30).next_to(axes.x_axis.get_end(), DOWN)
         y_label = MathTex("\\Psi(x)", font_size=30).next_to(axes.y_axis.get_top(), LEFT)
+
+        self.play(Write(x_label), Write(y_label), run_time=1.5)
 
         # Wave packet parameters
         x0 = -2
@@ -168,20 +174,24 @@ class CircleEquationProof(Scene):
             return np.real(psi)
 
         wavefunction = always_redraw(lambda: axes.plot(psi_real, color=BLUE))
-        psi_label = axes.get_graph_label(wavefunction, label="\\Psi(x)")
-        psi_label.shift(DOWN * 0.3)
 
-        self.add(graph_title, axes, x_label, y_label, wavefunction, psi_label)
+        #psi_label = axes.get_graph_label(wavefunction, label="\\Psi(x)")
+        #psi_label.shift(DOWN * 0.3)
 
-        # Animate the wave packet
-        self.play(t_tracker.animate.set_value(8), run_time=8, rate_func=linear)
-        self.wait(1)
+        self.play(Create(wavefunction), run_time=4)
+
+        # Shorter animation duration
+        self.play(t_tracker.animate.set_value(8), run_time=4, rate_func=linear)
+
+        self.wait(0.5)
 
         # -----------------------------
         # Final text
         # -----------------------------
-        final_text = Text("Quantum Mechanics is Weird!", font_size=40, color=YELLOW)
-        self.play(FadeOut(graph_title), FadeOut(axes), FadeOut(x_label), FadeOut(y_label),
-                  FadeOut(wavefunction), FadeOut(psi_label))
+        final_text = Text("Nailed it!", font_size=40, color=YELLOW)
+        self.play(
+            FadeOut(graph_title), FadeOut(axes), FadeOut(x_label),
+            FadeOut(y_label), FadeOut(wavefunction)
+        )
         self.play(FadeIn(final_text, shift=UP), run_time=1.5)
         self.wait(2)
