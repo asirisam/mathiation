@@ -50,7 +50,6 @@ class CircleEquationProof(Scene):
         start_y = config.frame_height / 4
         steps_group = VGroup()
 
-        # --- stickman function ---
         def create_stickman(center_point):
             head_radius = 0.15
             body_length = 0.4
@@ -71,7 +70,6 @@ class CircleEquationProof(Scene):
                              body_bottom + RIGHT*leg_length + DOWN*0.4, color=YELLOW)
             return VGroup(head, body, arm_left, arm_right, leg_left, leg_right)
 
-        # --- add_step function with Write animation & stickman ---
         def add_step(step_mob):
             step_mob.set(width=min(step_mob.width, text_width))
             steps_group.add(step_mob)
@@ -111,7 +109,7 @@ class CircleEquationProof(Scene):
                 self.wait(0.5)
 
         # -----------------------------
-        # Steps list for Schrödinger equation derivation
+        # Steps list
         # -----------------------------
         steps_list = [
             MathTex(r"\text{Step 1: Classical energy } E = \frac{p^2}{2m} + V", font_size=32, color=BLUE),
@@ -127,28 +125,55 @@ class CircleEquationProof(Scene):
         self.wait(1)
 
         # -----------------------------
-        # Graph slide (1D wavefunction ψ vs x)
+        # Graph slide: moving wave packet
         # -----------------------------
         self.clear()
-        graph_title = Text("Example Wavefunction", font_size=40, color=ORANGE).to_edge(UP)
+        graph_title = Text("Free Particle Wave Packet", font_size=40, color=ORANGE).to_edge(UP)
+
+        # Paddings
+        left_padding = 1.0
+        right_padding = 1.0
+        top_padding = 1.5
+        graph_width = config.frame_width - left_padding - right_padding
+        graph_height = config.frame_height - top_padding - 1.0  # leave some bottom space
+
         axes = Axes(
-            x_range=[0, 10, 1],
+            x_range=[-5, 5, 1],
             y_range=[-1.5, 1.5, 0.5],
-            x_length=6,
-            y_length=3,
+            x_length=graph_width,
+            y_length=graph_height,
             tips=False
         ).next_to(graph_title, DOWN, buff=0.5)
 
-        x_vals = np.linspace(0, 10, 200)
-        y_vals = np.sin(x_vals)  # simple ψ(x) = sin(x) example
-        wavefunction = axes.plot(lambda x: np.sin(x), color=BLUE)
+        # Wave packet parameters
+        x0 = -2       # initial center
+        sigma = 0.8   # width of Gaussian
+        k0 = 5        # wave number
+        m = 1         # mass
+        hbar = 1      # reduced Planck constant
 
+        t_tracker = ValueTracker(0)  # time variable
+
+        # Real part of exact Gaussian wave packet solution
+        def psi_real(x):
+            t = t_tracker.get_value()
+            sigma_t = sigma * np.sqrt(1 + (hbar * t / (m * sigma**2))**2)
+            prefactor = sigma / sigma_t
+            x_shift = x0 + (hbar * k0 / m) * t
+            phase = np.exp(1j * (k0 * (x - hbar * k0 * t / (2*m))))
+            gaussian = np.exp(-((x - x_shift)**2) / (2*sigma_t**2))
+            psi = prefactor * gaussian * phase
+            return np.real(psi)
+
+        wavefunction = always_redraw(lambda: axes.plot(psi_real, color=BLUE))
         psi_label = axes.get_graph_label(wavefunction, label="\\Psi(x)")
+        psi_label.shift(DOWN * 0.3)
 
-        self.play(FadeIn(graph_title))
-        self.play(Create(axes), run_time=1)
-        self.play(Create(wavefunction), Write(psi_label), run_time=2)
-        self.wait(2)
+        self.add(graph_title, axes, wavefunction, psi_label)
+
+        # Animate the wave packet moving more slowly
+        self.play(t_tracker.animate.set_value(8), run_time=8, rate_func=linear)  # slower animation
+        self.wait(1)
 
         # -----------------------------
         # Final text
