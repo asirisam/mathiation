@@ -128,33 +128,35 @@ class CircleEquationProof(Scene):
         # Graph slide: moving wave packet
         # -----------------------------
         self.clear()
-        graph_title = Text("Free Particle Wave Packet", font_size=40, color=ORANGE).to_edge(UP)
 
-        # Paddings
-        left_padding = 1.0
-        right_padding = 1.0
-        top_padding = 1.5
-        graph_width = config.frame_width - left_padding - right_padding
-        graph_height = config.frame_height - top_padding - 1.0  # leave some bottom space
+        # Graph title with top padding
+        graph_title = Text("Free Particle Wave Packet", font_size=30, color=ORANGE)
+        top_padding = 1.5  # distance from top
+        graph_title.to_edge(UP, buff=top_padding)
 
+        # Axes (keep centered)
         axes = Axes(
             x_range=[-5, 5, 1],
             y_range=[-1.5, 1.5, 0.5],
-            x_length=graph_width,
-            y_length=graph_height,
-            tips=False
-        ).next_to(graph_title, DOWN, buff=0.5)
+            x_length=5,
+            y_length=3,
+            tips=False,
+            axis_config={"include_numbers": True, "font_size": 24}
+        )
+
+        # Axis labels
+        x_label = MathTex("x", font_size=30).next_to(axes.x_axis.get_end(), DOWN)
+        y_label = MathTex("\\Psi(x)", font_size=30).next_to(axes.y_axis.get_top(), LEFT)
 
         # Wave packet parameters
-        x0 = -2       # initial center
-        sigma = 0.8   # width of Gaussian
-        k0 = 5        # wave number
-        m = 1         # mass
-        hbar = 1      # reduced Planck constant
+        x0 = -2
+        sigma = 0.8
+        k0 = 5
+        m = 1
+        hbar = 1
 
-        t_tracker = ValueTracker(0)  # time variable
+        t_tracker = ValueTracker(0)
 
-        # Real part of exact Gaussian wave packet solution
         def psi_real(x):
             t = t_tracker.get_value()
             sigma_t = sigma * np.sqrt(1 + (hbar * t / (m * sigma**2))**2)
@@ -169,16 +171,17 @@ class CircleEquationProof(Scene):
         psi_label = axes.get_graph_label(wavefunction, label="\\Psi(x)")
         psi_label.shift(DOWN * 0.3)
 
-        self.add(graph_title, axes, wavefunction, psi_label)
+        self.add(graph_title, axes, x_label, y_label, wavefunction, psi_label)
 
-        # Animate the wave packet moving more slowly
-        self.play(t_tracker.animate.set_value(8), run_time=8, rate_func=linear)  # slower animation
+        # Animate the wave packet
+        self.play(t_tracker.animate.set_value(8), run_time=8, rate_func=linear)
         self.wait(1)
 
         # -----------------------------
         # Final text
         # -----------------------------
         final_text = Text("Quantum Mechanics is Weird!", font_size=40, color=YELLOW)
-        self.play(FadeOut(graph_title), FadeOut(axes), FadeOut(wavefunction), FadeOut(psi_label))
+        self.play(FadeOut(graph_title), FadeOut(axes), FadeOut(x_label), FadeOut(y_label),
+                  FadeOut(wavefunction), FadeOut(psi_label))
         self.play(FadeIn(final_text, shift=UP), run_time=1.5)
         self.wait(2)
