@@ -8,7 +8,7 @@ config.frame_width = 6
 config.frame_height = 6 * (1920 / 1080)
 config.background_color = BLACK
 
-class CircleEquationProof(Scene):
+class ShrodingerEquation(Scene):
     def construct(self):
         # -----------------------------
         # Title
@@ -21,8 +21,8 @@ class CircleEquationProof(Scene):
         # -----------------------------
         # Question
         # -----------------------------
-        left_padding = 1.0
-        right_padding = 1.0
+        left_padding = 1.1
+        right_padding = 1.1
         top_padding = 1.5
         text_width = config.frame_width - left_padding - right_padding
 
@@ -44,8 +44,8 @@ class CircleEquationProof(Scene):
         # -----------------------------
         # Steps animation
         # -----------------------------
-        left_padding = 1.2
-        right_padding = 0.3
+        left_padding = 1.0
+        right_padding = 1.0
         text_width = config.frame_width - left_padding - right_padding
         start_y = config.frame_height / 4
         steps_group = VGroup()
@@ -70,61 +70,87 @@ class CircleEquationProof(Scene):
                              body_bottom + RIGHT*leg_length + DOWN*0.4, color=YELLOW)
             return VGroup(head, body, arm_left, arm_right, leg_left, leg_right)
 
-        def add_step(step_mob):
+        def add_step(step_mob, highlight=False):
             step_mob.set(width=min(step_mob.width, text_width))
-            steps_group.add(step_mob)
+
+            # If highlighted, create a rectangle around step
+            if highlight:
+                rect = SurroundingRectangle(step_mob, color=RED, buff=0.15)
+                step_group = VGroup(step_mob, rect)
+            else:
+                step_group = step_mob
+
+            steps_group.add(step_group)
 
             if len(steps_group) == 1:
-                step_mob.move_to(UP * start_y)
+                step_group.move_to(UP * start_y)
             else:
-                step_mob.next_to(steps_group[-2], DOWN, buff=0.7)
+                step_group.next_to(steps_group[-2], DOWN, buff=0.7)
 
-            stickman = create_stickman(step_mob.get_bottom() + DOWN*1.0)
+            stickman = create_stickman(step_group.get_bottom() + DOWN*0.8)
             self.add(stickman)
 
             pointer = Line(
                 stickman[3].get_end(),
                 stickman[3].get_end() + RIGHT*0.5,
-                color=YELLOW, stroke_width=2
+                color=GREEN, stroke_width=4
             )
             self.add(pointer)
 
-            def update_man(pointer, step_mob, alpha):
-                start = step_mob.get_left()
-                end = step_mob.get_right()
+            def update_man(pointer, step_group, alpha):
+                start = step_group.get_left()
+                end = step_group.get_right()
                 target = start + alpha * (end - start)
                 pointer.put_start_and_end_on(stickman[3].get_end(), target)
 
             self.play(
-                Write(step_mob, run_time=1.5),
-                UpdateFromAlphaFunc(pointer, lambda mob, alpha: update_man(mob, step_mob, alpha))
+                Write(step_mob, run_time=0.75),
+                UpdateFromAlphaFunc(pointer, lambda mob, alpha: update_man(mob, step_group, alpha))
             )
 
             self.remove(stickman, pointer)
 
+            # Scroll steps if more than 4
             if len(steps_group) > 4:
                 shift_amount = steps_group[-5].height + 0.7
                 self.play(steps_group.animate.shift(UP*shift_amount), run_time=0.5)
             else:
                 self.wait(0.5)
 
+        # -----------------------------
+        # Steps list with highlighted equations
+        # -----------------------------
         steps_list = [
             MathTex(r"\text{Step 1: Classical Energy }", font_size=32, color=BLUE),
             MathTex(r"E = \frac{p^2}{2m} + V", font_size=32, color=GREEN),
-            MathTex(r"\text{Step 2: Quantization Replacement }", font_size=32, color=GREEN),
+            MathTex(r"p \text{ is momentum}", font_size=32, color=PURPLE),
+            MathTex(r"m \text{ is the mass of the particle}", font_size=32, color=PURPLE),
+            MathTex(r"\text{Step 2: Quantization Replacement }", font_size=32, color=WHITE),
             MathTex(r"p \to -i\hbar\nabla, \ E \to i \hbar \partial_t", font_size=32, color=GREEN),
+            MathTex(r"p \to -i \hbar \nabla \quad \text{(derivative in space)}", font_size=32, color=PURPLE),
+            MathTex(r"E \to i \hbar \frac{\partial}{\partial t} \quad \text{(derivative in time)}", font_size=32, color=PURPLE),
             MathTex(r"\text{Step 3: Hamiltonian Operator}", font_size=32, color=YELLOW),
             MathTex(r"\hat{H} = \frac{\hat{p}^2}{2m} + V(\mathbf{r})", font_size=32, color=GREEN),
             MathTex(r"\text{Step 4: Schrödinger Equation }", font_size=32, color=ORANGE),
-            MathTex(r"i \hbar \partial_t \Psi = \hat{H} \Psi", font_size=32, color=GREEN),
+            MathTex(r"i \hbar \partial_t \Psi = \hat{H} \Psi", font_size=32, color=GREEN),  # Highlight
+            MathTex(r"\Psi \text{ is the wavefunction containing all information}", font_size=32, color=PURPLE),
+            MathTex(r"i \hbar \partial_t \Psi = \hat{H} \Psi \quad \text{describes time evolution}", font_size=32, color=PURPLE),
             MathTex(r"\text{Step 5: Substitute Kinetic Term }", font_size=32, color=PINK),
             MathTex(r"\hat{H} = -\frac{\hbar^2}{2m}\nabla^2 + V", font_size=32, color=GREEN),
             MathTex(r"\text{Step 6: Final Form }", font_size=32, color=BLUE),
-            MathTex(r"i \hbar \partial_t \Psi = \left[-\frac{\hbar^2}{2m}\nabla^2 + V(\mathbf{r})\right]\Psi", font_size=32, color=GREEN)
+            MathTex(r"i \hbar \partial_t \Psi = \left[-\frac{\hbar^2}{2m}\nabla^2 + V(\mathbf{r})\right]\Psi", font_size=32, color=GREEN),  # Highlight
+            MathTex(r"-\frac{\hbar^2}{2m} \nabla^2 \Psi \text{ is the kinetic energy part}", font_size=32, color=PURPLE),
+            MathTex(r"V \Psi \text{ is the potential energy part}", font_size=32, color=PURPLE)
         ]
 
-        for step in steps_list:
-            add_step(step)
+        highlight_indices = [11, 17]
+
+        for idx, step in enumerate(steps_list):
+            if idx in highlight_indices:
+                add_step(step, highlight=True)
+            else:
+                add_step(step)
+
         self.wait(1)
 
         # -----------------------------
@@ -182,8 +208,6 @@ class CircleEquationProof(Scene):
         )
         self.wait(0.3)
 
-        self.wait(1)
-        # Ending text
         self.clear()
         final_text = Text("Nailed it!", font_size=30, color=YELLOW)
         final_text.move_to(ORIGIN)
