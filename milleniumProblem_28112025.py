@@ -60,7 +60,7 @@ class YangMillsMassGap(Scene):
         short_answer.move_to(UP * 0.5)
 
         self.play(FadeIn(short_answer, shift=UP), run_time=1.0)
-        self.wait(1.2)
+        self.wait(1.0)
         self.play(FadeOut(hook), FadeOut(short_answer), run_time=0.8)
 
         # ===========================
@@ -142,7 +142,7 @@ class YangMillsMassGap(Scene):
 
             if len(steps_group) > 4:
                 shift_amount = steps_group[-5].height + 0.7
-                self.play(steps_group.animate.shift(UP * shift_amount), run_time=0.5)
+                self.play(steps_group.animate.shift(UP * shift_amount), run_time=0.25)
             else:
                 self.wait(0.4)
 
@@ -152,30 +152,39 @@ class YangMillsMassGap(Scene):
         steps_list = [
             MathTex(r"F_{\mu\nu} = \partial_\mu A_\nu - \partial_\nu A_\mu + [A_\mu, A_\nu]", font_size=34, color=BLUE),
             Text("Yang–Mills field tensor: describes how the field changes in space-time", font_size=26, color=WHITE),
+            Text("F_{μν} = field strength tensor", font_size=26, color=WHITE),
+            Text("A_μ = gauge field (vector potential)", font_size=26, color=WHITE),
+            Text("∂_μ = partial derivative w.r.t spacetime coordinate x^μ", font_size=26, color=WHITE),
+            Text("[A_μ, A_ν] = commutator due to non-abelian nature", font_size=26, color=WHITE),
 
             MathTex(r"\mathcal{L} = -\frac{1}{4} \mathrm{Tr} (F_{\mu\nu} F^{\mu\nu})", font_size=32, color=TEAL),
             Text("Yang–Mills Lagrangian: encodes the dynamics of the fields", font_size=26, color=WHITE),
+            Text("ℒ = Lagrangian density", font_size=26, color=WHITE),
+            Text("Tr = trace over gauge group indices", font_size=26, color=WHITE),
 
             MathTex(r"D^\mu F_{\mu\nu} = 0", font_size=32, color=GREEN),
             Text("Classical equations of motion for Yang–Mills fields", font_size=26, color=WHITE),
+            Text("D^μ = covariant derivative (includes gauge fields)", font_size=26, color=WHITE),
 
             MathTex(r"\hat{H} |\psi \rangle = E |\psi \rangle", font_size=32, color=ORANGE),
             Text("Quantum version: Hamiltonian acting on quantum states", font_size=26, color=WHITE),
+            Text("Ĥ = Hamiltonian operator", font_size=26, color=WHITE),
+            Text("|ψ⟩ = quantum state vector", font_size=26, color=WHITE),
+            Text("E = energy eigenvalue", font_size=26, color=WHITE),
 
             MathTex(r"\Delta = \min(E > 0) > 0", font_size=36, color=YELLOW),
             Text("Mass gap: the lowest non-zero energy state has positive mass", font_size=28, color=WHITE),
+            Text("Δ = mass gap (energy difference between ground and first excited state)", font_size=26, color=WHITE),
 
             MathTex(r"\text{Prove existence + } \Delta > 0 \text{ on } \mathbb{R}^{3+1}", font_size=32, color=WHITE),
             Text("Open problem:", font_size=28, color=WHITE),
-            Text("mathematically unsolved because", font_size=28, color=WHITE),
-            Text("the Yang–Mills equations are", font_size=28, color=WHITE),
-            Text("nonlinear, fields self-interact", font_size=28, color=WHITE),
-            Text("and analytic solutions in 4D are unknown.", font_size=28, color=WHITE),
-            Text("Lattice simulations suggest a gap exists", font_size=28, color=WHITE),
-            Text("but proof is missing.", font_size=28, color=WHITE)
+            Text("Mathematically unsolved because:", font_size=28, color=WHITE),
+            Text("• Yang–Mills equations are nonlinear", font_size=28, color=WHITE),
+            Text("• Fields self-interact, making analytic solutions in 4D unknown", font_size=28, color=WHITE),
+            Text("• Lattice simulations suggest a gap exists, but proof is missing", font_size=28, color=WHITE)
         ]
 
-        highlight_indices = [8, 11]  # highlight Mass gap and open problem
+        highlight_indices = [0, 6, 10, 13, 18, 21]  # highlight Mass gap and open problem
 
         for idx, step in enumerate(steps_list):
             step.set(width=SAFE_WIDTH)
@@ -303,7 +312,7 @@ class YangMillsMassGap(Scene):
         mg_caption.next_to(level_bars, DOWN, buff=0.6)
 
         self.play(Write(mg_caption), run_time=1.0)
-        self.wait(1.2)
+        self.wait(1.0)
 
         # ===========================
         # Final Slide
@@ -336,22 +345,13 @@ class YangMillsMassGap(Scene):
 
         self.play(Write(final_title), run_time=1.0)
         self.play(FadeIn(bullets, shift=DOWN), run_time=1.0)
-        self.wait(1.6)
+        self.wait(1.0)
 
-        final_flag = Text(
-            "Curious? Read more — and keep asking questions",
-            font_size=28,
-            color=YELLOW
-        ).set(width=SAFE_WIDTH)
-        final_flag.to_edge(DOWN, buff=1.0)
 
-        self.play(Write(final_flag), run_time=1.2)
-        self.wait(2.0)
-
-        self.play(FadeOut(final_title), FadeOut(bullets), FadeOut(final_flag), run_time=0.8)
+        self.play(FadeOut(final_title), FadeOut(bullets), run_time=0.8)
         self.wait(0.5)
 
         end_text = Text("Nailed it!", font_size=48, color=YELLOW)
         end_text.move_to(ORIGIN)
         self.play(Write(end_text), run_time=1.4)
-        self.wait(2.0)
+        self.wait(1.0)
