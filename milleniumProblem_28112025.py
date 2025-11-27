@@ -300,7 +300,7 @@ class YangMillsMassGap(Scene):
             "amount (Δ) above the ground (zero) energy.",
             font_size=26
         ).set(width=SAFE_WIDTH)
-        mg_caption.next_to(level_bars, RIGHT, buff=0.6)
+        mg_caption.next_to(level_bars, DOWN, buff=0.6)
 
         self.play(Write(mg_caption), run_time=1.0)
         self.wait(1.2)
