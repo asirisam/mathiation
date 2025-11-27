@@ -11,7 +11,6 @@ config.background_color = BLACK
 LEFT_PAD = 1.0
 RIGHT_PAD = 1.0
 TOP_PAD = 1.5
-
 SAFE_WIDTH = config.frame_width - LEFT_PAD - RIGHT_PAD
 
 class YangMillsMassGap(Scene):
@@ -27,7 +26,7 @@ class YangMillsMassGap(Scene):
         ).set(width=SAFE_WIDTH)
 
         subtitle = Text(
-            "A conceptual TikTok explainer",
+            "A Millennium Prize Problem",
             font_size=28,
             color=GREY
         ).set(width=SAFE_WIDTH)
@@ -147,22 +146,36 @@ class YangMillsMassGap(Scene):
             else:
                 self.wait(0.4)
 
+        # ===========================
+        # Steps list with MathTex + explanations
+        # ===========================
         steps_list = [
-            Text("Step 1: Fields of force (like the electromagnetic field)", font_size=34, color=BLUE),
-            Text("But ... gauge symmetry can be 'non-abelian' — order matters", font_size=32, color=TEAL),
-            Text("Gauge group example: SU(N) — matrices that rotate internal 'colour' space", font_size=30, color=GREEN),
-            Text("Yang–Mills = the rules for how these non-abelian fields interact", font_size=32, color=ORANGE),
-            Text("Unlike EM, Yang–Mills fields interact with themselves", font_size=32, color=PURPLE),
-            Text("This self-interaction leads to rich phenomena at low energy:", font_size=32, color=WHITE),
-            Text("— Confinement: field lines squeeze; particles get trapped", font_size=30, color=YELLOW),
-            Text("— Emergent mass: although fundamental carriers may be massless, bound states are massive", font_size=30, color=YELLOW),
-            Text("Which brings us to the Mass Gap:", font_size=36, color=ORANGE),
-            Text("Mass gap = the lowest non-zero energy state has positive mass Δ > 0", font_size=32, color=GREEN),
-            Text("Physicists (and lattice simulations) strongly believe QCD has a mass gap", font_size=30, color=PURPLE),
-            Text("But mathematicians want a rigorous proof: existence + Δ > 0 for YM on ℝ³⁺¹", font_size=30, color=WHITE)
+            MathTex(r"F_{\mu\nu} = \partial_\mu A_\nu - \partial_\nu A_\mu + [A_\mu, A_\nu]", font_size=34, color=BLUE),
+            Text("Yang–Mills field tensor: describes how the field changes in space-time", font_size=26, color=WHITE),
+
+            MathTex(r"\mathcal{L} = -\frac{1}{4} \mathrm{Tr} (F_{\mu\nu} F^{\mu\nu})", font_size=32, color=TEAL),
+            Text("Yang–Mills Lagrangian: encodes the dynamics of the fields", font_size=26, color=WHITE),
+
+            MathTex(r"D^\mu F_{\mu\nu} = 0", font_size=32, color=GREEN),
+            Text("Classical equations of motion for Yang–Mills fields", font_size=26, color=WHITE),
+
+            MathTex(r"\hat{H} |\psi \rangle = E |\psi \rangle", font_size=32, color=ORANGE),
+            Text("Quantum version: Hamiltonian acting on quantum states", font_size=26, color=WHITE),
+
+            MathTex(r"\Delta = \min(E > 0) > 0", font_size=36, color=YELLOW),
+            Text("Mass gap: the lowest non-zero energy state has positive mass", font_size=28, color=WHITE),
+
+            MathTex(r"\text{Prove existence + } \Delta > 0 \text{ on } \mathbb{R}^{3+1}", font_size=32, color=WHITE),
+            Text("Open problem:", font_size=28, color=WHITE),
+            Text("mathematically unsolved because", font_size=28, color=WHITE),
+            Text("the Yang–Mills equations are", font_size=28, color=WHITE),
+            Text("nonlinear, fields self-interact", font_size=28, color=WHITE),
+            Text("and analytic solutions in 4D are unknown.", font_size=28, color=WHITE),
+            Text("Lattice simulations suggest a gap exists", font_size=28, color=WHITE),
+            Text("but proof is missing.", font_size=28, color=WHITE)
         ]
 
-        highlight_indices = [8, 11]
+        highlight_indices = [8, 11]  # highlight Mass gap and open problem
 
         for idx, step in enumerate(steps_list):
             step.set(width=SAFE_WIDTH)
@@ -171,7 +184,7 @@ class YangMillsMassGap(Scene):
         self.wait(1.0)
 
         # ===========================
-        # Gauge Field Rings
+        # Gauge Field Rings (Conceptual)
         # ===========================
         self.clear()
 
